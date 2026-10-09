@@ -52,3 +52,51 @@ o dos oraciones: ¿qué es y por qué lo necesito?
 \end{guia}
 
 % >>> REVISIÓN 1: ESCRIBE AQUÍ la lista de temas tentativos <<<
+
+El criterio que ordena este marco teórico es el de necesidad: se incluye únicamente aquello que el lector requiere para comprender las decisiones tomadas en el proyecto, y se excluye todo concepto que, siendo correcto, no se emplee después en el documento. Los temas se agrupan en cinco bloques que corresponden a las dimensiones del problema.
+
+\begin{enumerate}
+  \item \textbf{Gestión documental y documentos de archivo.}
+  \begin{enumerate}
+    \item Documento de archivo y ciclo de vida documental: producción, trámite, concentración y destino final. Sustenta por qué el sistema modela estados y no únicamente archivos almacenados.
+    \item Atributos de un documento fidedigno conforme a la norma ISO 15489-1 \cite{iso15489}: autenticidad, fiabilidad, integridad y disponibilidad, y el mecanismo del sistema que garantiza cada uno.
+    \item Metadatos documentales y su función en la recuperación y en la prueba.
+    \item Trazabilidad y pista de auditoría: requisitos de inmutabilidad, completitud y no repudio. Es el concepto central del proyecto.
+  \end{enumerate}
+
+  \item \textbf{Ingeniería de software.}
+  \begin{enumerate}
+    \item Ingeniería de requerimientos conforme a la norma ISO/IEC/IEEE 29148 \cite{iso29148}: requisitos funcionales y no funcionales, elicitación, validación y trazabilidad.
+    \item Modelo de calidad del producto de software de la norma ISO/IEC 25010 \cite{iso25010}, que organiza el catálogo de requisitos no funcionales.
+    \item Modelos de proceso secuenciales frente a iterativos e incrementales \cite{sommerville2011, pressman2010}, y adaptación del marco de trabajo Scrum \cite{scrumguide2020} a un proyecto individual con fecha de término fija.
+    \item Arquitectura de software: atributos de calidad como fuerzas de diseño, registro de decisiones arquitectónicas y arquitectura en capas \cite{bass2021}.
+  \end{enumerate}
+
+  \item \textbf{Bases de datos y modelado.}
+  \begin{enumerate}
+    \item Modelo relacional, normalización y modelo entidad-relación \cite{elmasri2016}.
+    \item Transacciones y propiedades ACID. Sustentan la generación del folio institucional único mediante bloqueo de fila.
+    \item Índices y estrategias de almacenamiento de archivos: binario en base de datos frente a sistema de archivos con referencia.
+  \end{enumerate}
+
+  \item \textbf{Tecnologías de desarrollo e infraestructura.}
+  \begin{enumerate}
+    \item Aplicaciones web y marco de trabajo Laravel \cite{laraveldocs}: enrutamiento, capa de acceso a datos, migraciones, validación y políticas de autorización.
+    \item Sistema gestor de base de datos relacional y motor de plantillas del lado del servidor, incluyendo el control de privilegios a nivel de tabla.
+    \item Virtualización y contenedores: imagen, contenedor y volumen. Sustenta la estrategia de despliegue reproducible.
+    \item Administración de servidores y políticas de respaldo y recuperación.
+  \end{enumerate}
+
+  \item \textbf{Seguridad de la información.}
+  \begin{enumerate}
+    \item Confidencialidad, integridad y disponibilidad. Autenticación frente a autorización y control de acceso basado en roles con ámbito organizacional.
+    \item Almacenamiento seguro de contraseñas mediante funciones de derivación de clave con sal.
+    \item Funciones hash criptográficas aplicadas a la verificación de integridad y a la detección de cargas duplicadas.
+    \item Vulnerabilidades frecuentes en aplicaciones web según el proyecto OWASP \cite{owasp2021} y cifrado en tránsito mediante TLS.
+  \end{enumerate}
+
+  \item \textbf{Marco normativo aplicable.} Disposiciones de la Ley General de Archivos \cite{lga2018} y de la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados \cite{lgpdppso2017} que inciden en el control de accesos y en el tratamiento de los datos empleados durante el desarrollo.
+\end{enumerate}
+
+Cada bloque fundamenta un elemento concreto del proyecto, de modo que ningún tema se incluye sin uso posterior: el primero sustenta los estados del documento, el versionado y la bitácora; el segundo, el catálogo de requisitos y las decisiones de arquitectura; el tercero, el modelo de datos y la generación transaccional del folio; el cuarto, la construcción de los módulos y el entorno virtualizado; el quinto, el control de acceso y las pruebas de seguridad; y el sexto, la justificación normativa de la bitácora y del tratamiento de datos de prueba.
+
