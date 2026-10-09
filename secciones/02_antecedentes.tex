@@ -35,6 +35,15 @@ reales; evita depender solo de blogs.
 
 % >>> ESCRIBE AQUÍ los antecedentes del problema <<<
 
+La gestión del documento administrativo ha recorrido tres niveles de madurez que conviene distinguir, porque con frecuencia se confunden y esa confusión explica por qué algunas iniciativas de modernización no resuelven el problema que pretendían atender. El primer nivel es la \textit{digitalización}, que consiste en convertir un documento en papel a un archivo electrónico; resuelve la conservación y la reproducción, pero por sí sola no aporta control. El segundo es la \textit{gestión documental}, que añade metadatos, clasificación, control de versiones y permisos, de modo que el documento electrónico pueda localizarse y administrarse. El tercero es la \textit{gestión de documentos de archivo}, que incorpora la evidencia del proceso: quién hizo qué, cuándo y bajo qué autoridad.
+
+Este tercer nivel es el que aborda la norma ISO 15489-1, la cual establece los conceptos y principios para la creación, captura y gestión de documentos de archivo y define como atributos esenciales de un documento fidedigno su autenticidad, fiabilidad, integridad y disponibilidad \cite{iso15489}. El presente proyecto se ubica deliberadamente en este nivel: el problema del Instituto no es que sus documentos estén en papel, sino que su ciclo de vida no es reconstruible.
+
+En el sector público mexicano, la obligación de alcanzar ese nivel no es solo una buena práctica. La Ley General de Archivos establece los principios de organización, conservación y administración homogénea de los archivos en posesión de cualquier autoridad \cite{lga2018}, y la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados regula el tratamiento de los datos personales contenidos en dicha documentación \cite{lgpdppso2017}. Ambas presuponen la capacidad de demostrar qué se hizo con un documento, capacidad que un control manual sobre libretas locales no puede ofrecer.
+
+Lo intentado hasta ahora en el propio Instituto se concentró en el proceso registral sustantivo, que desde 2019 opera de forma completamente electrónica \cite{futuver2024}. La brecha que permanece abierta es el flujo administrativo interno: las remisiones, oficios, expedientes en turno y correspondencia que circulan entre oficinas y que continúan dependiendo del traslado físico y del registro manual. El mecanismo técnico que cierra esa brecha es la \textit{pista de auditoría}, un registro cronológico, íntegro y no modificable de los eventos que ocurren sobre un recurso, cuyo valor probatorio depende de que la inmutabilidad no descanse en la disciplina de la aplicación sino en controles del propio motor de almacenamiento.
+
+
 
 \subsection{Antecedentes de la empresa} \label{sec:antecedentes_empresa} % audit:req=antecedentes_empresa
 
@@ -61,6 +70,17 @@ datos personales.
 
 % >>> ESCRIBE AQUÍ los antecedentes de la empresa <<<
 
+El Instituto Registral y Catastral del Estado de Tamaulipas es un organismo público descentralizado de la administración pública estatal, dotado de personalidad jurídica y patrimonio propio, que se encuentra bajo la coordinación de la persona titular de la Secretaría General de Gobierno. Su objeto consiste en desarrollar las tareas del Registro Público de la Propiedad Inmueble y del Comercio, así como las del Catastro del Estado, conforme a las normas que rigen sus actividades y mediante la coordinación entre ambos servicios \cite{poe2022irct}.
+
+Su función sustantiva consiste en otorgar a la ciudadanía certeza jurídica sobre los actos relacionados con el derecho de propiedad, los bienes inmuebles, las sociedades y las resoluciones relativas a personas físicas y morales. A través de dicha función el Estado da publicidad a actos y hechos que surten efectos frente a terceros, integra el inventario inmobiliario estatal para efectos legales y fiscales, y pone a disposición la consulta de la cartografía digital actual e histórica de los inmuebles urbanos y rústicos, en apoyo a los ayuntamientos \cite{sgg2023irct}. Su sede se ubica en Boulevard Práxedis Balboa sin número, Parque Bicentenario, código postal 88630, en Ciudad Victoria, Tamaulipas \cite{transparenciairct}.
+
+El surgimiento del Instituto se estableció mediante el Decreto LIX-1093, por el cual se expidió la Ley del Registro Público de la Propiedad Inmueble y del Comercio, publicada en el Periódico Oficial del Estado, anexo al número 27, de fecha 28 de febrero de 2008 \cite{leyrpp2008}. El componente catastral se rige por la Ley de Catastro para el Estado de Tamaulipas, publicada en el Periódico Oficial número 130 de fecha 30 de octubre de 2001 \cite{leycatastro2001}, que atribuye a la Dirección de Catastro del Instituto la integración y actualización de los registros catastrales del Estado.
+
+El Instituto cuenta con una trayectoria previa de modernización que conviene documentar, porque define con precisión qué problema quedó resuelto y cuál permanece abierto. De acuerdo con la empresa responsable de la implementación, en 2019 el Registro Público de la Propiedad y del Comercio del Estado se convirtió en un registro completamente electrónico, operando sus oficinas registrales bajo un único sistema de información registral; el mismo proceso incluyó la digitalización de más de dos millones de antecedentes registrales y la incorporación de firma electrónica avanzada para garantizar la autoría e integridad de los asientos. La modernización permitió además pasar de una única oficina concentrada en la capital a seis oficinas registrales distribuidas en el territorio estatal \cite{futuver2024}. Más recientemente, el Instituto ha presentado los avances del Proyecto Ejecutivo de Modernización Integral 2025, ejecutado en coordinación con la Secretaría de Desarrollo Agrario, Territorial y Urbano \cite{tamaulipas2025mod}.
+
+Esa distribución territorial en seis oficinas, que resolvió el problema de cercanía con el ciudadano, es precisamente la que da origen al flujo documental interno que el presente proyecto atiende.
+
+
 
 \subsection{Antecedentes teóricos} \label{sec:antecedentes_teoricos} % audit:req=antecedentes_teoricos
 
@@ -79,6 +99,19 @@ tu proyecto? ¿qué fuentes los respaldan?
 \end{guia}
 
 % >>> ESCRIBE AQUÍ los antecedentes teóricos <<<
+
+Existe un conjunto maduro de plataformas de gestión documental de código abierto que resuelven el problema general de la administración de documentos electrónicos, y su revisión es necesaria para sustentar por qué este proyecto opta por un desarrollo específico.
+
+Alfresco Community Edition es una plataforma de gestión de contenido empresarial que ofrece control de versiones, automatización de flujos de trabajo, manejo de metadatos y registro de auditoría \cite{alfresco}. Su fortaleza es la amplitud: puede configurarse para escenarios documentales muy distintos. Su costo correlativo es una curva de aprendizaje pronunciada y unos requerimientos de operación proporcionales a esa amplitud, lo que en una institución sin personal dedicado a la plataforma se traduce en dependencia del proveedor o del implementador.
+
+OpenKM Community Edition se orienta a la captura de documentos desde diversas fuentes y su incorporación a flujos de trabajo y taxonomías predefinidas, sobre la idea de un repositorio central regido por reglas \cite{openkm}. Su modelo de permisos se estructura por carpeta y por rol, lo que funciona bien cuando la organización del acervo es jerárquica, pero no expresa de manera natural una restricción por unidad administrativa de adscripción del usuario.
+
+Mayan EDMS pone el énfasis en escenarios de archivo y cumplimiento, con versionado, extracción de metadatos, reconocimiento óptico de caracteres y controles de acceso basados en etiquetas \cite{mayanedms}. Es la alternativa más cercana al problema archivístico, aunque su caso de uso central es la captura y recuperación de documentos digitalizados y no el seguimiento de un documento que circula entre oficinas.
+
+En el extremo ligero, SeedDMS ofrece un repositorio con versionado y control de acceso apropiado para equipos pequeños que no requieren adoptar una plataforma completa \cite{seeddms}, a costa de prescindir de flujos de trabajo configurables y de capacidades de auditoría detallada.
+
+Estas cuatro plataformas comparten una característica determinante: fueron concebidas como soluciones de propósito general. Cubren con solvencia las funciones genéricas de gestión documental —versionado, auditoría y permisos por rol— pero ninguna incorpora de origen las reglas que caracterizan el proceso del Instituto, que se contrastan en la Tabla~\ref{tab:comparativa_antecedentes}.
+
 
 
 \subsubsection{Tabla comparativa de antecedentes} \label{subsec:tabla_comparativa_antecedentes} % audit:req=tabla_comparativa
@@ -120,3 +153,34 @@ significativos.
 %   \end{tabular}
 % \end{table}
 % >>> ESCRIBE AQUÍ el análisis de la tabla comparativa (cítala con Tabla~\ref{tab:comparativa_antecedentes}) <<<
+
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.25}
+  \caption{Comparación de las plataformas de gestión documental revisadas con la propuesta.}
+  \label{tab:comparativa_antecedentes}
+  \begin{tabular}{@{}p{2.3cm}p{2.3cm}p{2.3cm}p{2.3cm}p{2.3cm}p{2.3cm}@{}}
+    \toprule
+    \textbf{Sistema} & \textbf{Ámbito de permisos} & \textbf{Folio institucional único} & \textbf{Turnado y acuse} & \textbf{Consulta sin descarga} & \textbf{Estadística institucional} \\
+    \midrule
+    Alfresco Community \cite{alfresco} & Rol y carpeta & Requiere desarrollo & Configurable por flujo & No predeterminada & Herramienta externa \\
+    OpenKM Community \cite{openkm} & Rol y carpeta & Requiere desarrollo & Configurable por flujo & No predeterminada & Herramienta externa \\
+    Mayan EDMS \cite{mayanedms} & Rol y etiqueta & Requiere desarrollo & No contemplado & No predeterminada & Herramienta externa \\
+    SeedDMS \cite{seeddms} & Rol y carpeta & Requiere desarrollo & No contemplado & No predeterminada & No contemplada \\
+    \midrule
+    \textbf{Propuesta (este trabajo)} & Intersección de rol y oficina de adscripción & Generado por el sistema con clave de oficina y consecutivo anual & Estado del documento con fechas de turnado y acuse & Modo predeterminado; descarga con permiso y motivo & Derivada de la bitácora por oficina, usuario, tipo y periodo \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+La Tabla~\ref{tab:comparativa_antecedentes} permite una lectura que no es la esperada. Las cuatro plataformas revisadas cubren adecuadamente las funciones genéricas de gestión documental: todas versionan, todas auditan y todas controlan el acceso por rol. Si el problema del Instituto fuera únicamente almacenar documentos con orden, cualquiera de ellas lo resolvería y este proyecto carecería de justificación.
+
+La divergencia aparece en las cinco columnas de la comparación, que recogen las reglas propias de la institución. El folio institucional único, compuesto a partir de la clave de oficina y un consecutivo anual, responde directamente a la ausencia de identificador común entre oficinas y ninguna plataforma lo trae de origen. El ámbito de datos determinado por la oficina de adscripción exige que el permiso efectivo resulte de la intersección entre el rol del usuario y la unidad a la que pertenece, mientras que las plataformas revisadas resuelven el ámbito por carpeta o por etiqueta, estructuras que no corresponden a la organización administrativa real. El ciclo de turnado y acuse de recepción, que reproduce digitalmente el sello de recibido y hace visible el tránsito hoy invisible del documento, solo es alcanzable mediante configuración de flujos de trabajo en dos de las cuatro. La consulta sin descarga como comportamiento predeterminado no es el modo de operación de ninguna de ellas. Y el control estadístico expresado en las categorías administrativas que el Instituto utiliza requeriría, en todos los casos, una herramienta externa alimentada por separado.
+
+A ello se suman las restricciones del contexto. El proyecto debe entregarse en un cuatrimestre, sin presupuesto para licenciamiento, sobre infraestructura provista por el Instituto y en condiciones que permitan a su área técnica mantener la solución sin dependencia del desarrollador. Adoptar una plataforma de propósito general implicaría dedicar el tiempo disponible a configurarla y adaptarla a reglas para las que no fue concebida, con un resultado más extenso en funciones pero menos ajustado al proceso y considerablemente más costoso de sostener.
+
+La conclusión no es que las plataformas existentes sean deficientes, sino que su ajuste al problema concreto es parcial: resuelven el almacenamiento y dejan sin resolver la trazabilidad en los términos administrativos que el Instituto necesita. De ahí que se opte por un desarrollo específico que incorpore esas reglas desde el diseño.
+
