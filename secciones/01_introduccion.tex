@@ -69,15 +69,23 @@ problemas sin evidencia; enunciados tan amplios que no se pueden resolver en una
 
 % >>> ESCRIBE AQUÍ el planteamiento del problema <<<
 
-El proceso documental vigente en el Instituto se apoya en tres mecanismos desarticulados: el traslado físico del expediente entre oficinas, la entrega presencial con sello y firma de recibido, y el registro manual en libretas u hojas de cálculo administradas localmente por cada oficina. Este esquema no es una elección deliberada, sino el resultado de que el flujo administrativo interno nunca fue formalizado en un procedimiento documentado, de modo que cada oficina resolvió su control de la manera que le resultó práctica.
+El proceso documental vigente se apoya en tres mecanismos desarticulados: el traslado físico del expediente entre oficinas, la entrega presencial con sello y firma de recibido, y el registro manual en libretas u hojas de cálculo administradas localmente por cada oficina. Este esquema no es una elección deliberada, sino el resultado de que el flujo administrativo interno nunca fue formalizado en un procedimiento documentado, de modo que cada oficina resolvió su control de la manera que le resultó práctica.
 
-De ese esquema se derivan cuatro cuellos de botella. El traslado físico somete el tiempo de ciclo del documento a la logística de transporte y no al trabajo sustantivo que debe realizarse sobre él. La doble captura obliga a registrar los mismos datos en la oficina emisora y en la receptora, lo que duplica el esfuerzo administrativo e introduce discrepancias entre ambos registros. La búsqueda física en archivo depende del conocimiento tácito del encargado, de modo que su ausencia detiene la consulta. Y la integración manual de reportes produce información tardía que no puede verificarse contra la fuente que la originó.
+De ahí se derivan cuatro cuellos de botella. El traslado físico somete el tiempo de ciclo del documento a la logística de transporte y no al trabajo sustantivo que debe realizarse sobre él. La doble captura obliga a registrar los mismos datos en la oficina emisora y en la receptora, lo que duplica el esfuerzo e introduce discrepancias entre ambos registros. La búsqueda en archivo depende del conocimiento tácito del encargado, de modo que su ausencia detiene la consulta. Y la integración manual de reportes produce información tardía que no puede verificarse contra la fuente que la originó.
 
-Por encima de estos cuellos de botella se encuentra el problema central, que no es la ausencia de digitalización sino la ausencia de trazabilidad. Del análisis del proceso vigente se desprenden cinco puntos donde la cadena de custodia de la información se interrumpe. El primero es el tránsito invisible: entre la salida de la oficina emisora y el sello de recepción no se registra el estado del documento, por lo que durante horas o días nadie puede afirmar dónde se encuentra el expediente. El segundo es la ausencia de un identificador único institucional, ya que cada oficina folia conforme a su propio criterio, lo que impide seguir un mismo documento entre oficinas y favorece la duplicidad. El tercero es el registro heterogéneo: los campos capturados varían entre oficinas y entre personas, de modo que los datos no resultan comparables ni agregables. El cuarto es la consulta sin huella, pues el acceso físico al expediente no deja constancia de quién consultó ni con qué motivo, lo que impide auditar el acceso a documentación sensible. El quinto es la sustitución sin versionado, ya que el documento corregido reemplaza al anterior sin conservar el antecedente y se pierde la posibilidad de comprobar qué se tenía en una fecha determinada.
+Por encima de ellos está el problema central, que no es la ausencia de digitalización sino la ausencia de trazabilidad. Del análisis del flujo se desprenden cinco puntos donde la cadena de custodia de la información se interrumpe:
 
-Conviene precisar el origen de esta caracterización. El proceso vigente no está formalizado en ningún procedimiento documentado del Instituto, por lo que su descripción se construyó a partir del análisis del flujo documental elaborado con el asesor empresarial durante la definición del proyecto. Los cinco puntos de ruptura son, en consecuencia, resultado de analizar ese flujo y no de una medición previa: el proceso actual no produce los datos que harían posible medirlo, lo cual es en sí mismo el problema que se plantea. Esa es precisamente la razón por la que el sistema incorpora una bitácora desde su primera versión, para que a partir de su liberación el Instituto disponga por primera vez de información verificable sobre su propio flujo documental.
+\begin{enumerate}[nosep]
+  \item \textbf{Tránsito invisible.} Entre la salida de la oficina emisora y el sello de recepción no se registra el estado del documento, por lo que durante horas o días nadie puede afirmar dónde se encuentra el expediente.
+  \item \textbf{Ausencia de identificador único.} Cada oficina folia conforme a su propio criterio, lo que impide seguir un mismo documento entre oficinas y favorece la duplicidad.
+  \item \textbf{Registro heterogéneo.} Los campos capturados varían entre oficinas y entre personas, de modo que los datos no resultan comparables ni agregables.
+  \item \textbf{Consulta sin huella.} El acceso físico al expediente no deja constancia de quién consultó ni con qué motivo, lo que impide auditar el acceso a documentación sensible.
+  \item \textbf{Sustitución sin versionado.} El documento corregido reemplaza al anterior sin conservar el antecedente, y se pierde la posibilidad de comprobar qué se tenía en una fecha determinada.
+\end{enumerate}
 
-La consecuencia conjunta es que el Instituto conserva sus documentos pero no puede dar cuenta de su ciclo de vida. Esta situación adquiere particular relevancia en una institución cuya documentación soporta derechos de propiedad y que, como sujeto obligado, se encuentra sometida a la normativa en materia de archivos \cite{lga2018} y de protección de datos personales \cite{lgpdppso2017}. De no atenderse, la institución continuará sin poder responder con certeza dónde está un expediente, quién accedió a él ni cuánto trabajo documental realiza cada oficina, y seguirá tomando decisiones de carga de trabajo sobre cifras que no son verificables.
+Conviene precisar el origen de esta caracterización. El proceso vigente no está formalizado en ningún procedimiento documentado del Instituto, por lo que su descripción se construyó a partir del análisis del flujo elaborado con el asesor empresarial durante la definición del proyecto. Los cinco puntos de ruptura son, en consecuencia, resultado de analizar ese flujo y no de una medición previa: el proceso actual no produce los datos que harían posible medirlo, lo cual es en sí mismo el problema que se plantea. Esa es precisamente la razón por la que el sistema incorpora una bitácora desde su primera versión, para que a partir de su liberación el Instituto disponga por primera vez de información verificable sobre su propio flujo documental.
+
+La consecuencia conjunta es que el Instituto conserva sus documentos pero no puede dar cuenta de su ciclo de vida. Esto adquiere particular relevancia en una institución cuya documentación soporta derechos de propiedad y que, como sujeto obligado, está sometida a la normativa en materia de archivos \cite{lga2018} y de protección de datos personales \cite{lgpdppso2017}. De no atenderse, la institución continuará sin poder responder con certeza dónde está un expediente, quién accedió a él ni cuánto trabajo documental realiza cada oficina, y seguirá tomando decisiones de carga de trabajo sobre cifras que no son verificables.
 
 El problema se enuncia así: \textbf{¿de qué manera puede integrarse un sistema que automatice el proceso de solicitud, carga, consulta y control estadístico de documentos en el Instituto Registral y Catastral del Estado de Tamaulipas, de modo que se reduzcan los tiempos de atención y se garantice la trazabilidad documental sobre una infraestructura administrable por la propia institución?}
 
@@ -117,20 +125,44 @@ Integrar un sistema que automatice el proceso de solicitud, carga, consulta y co
 % >>> ESCRIBE AQUÍ los objetivos específicos como lista numerada: \begin{enumerate} \item ... \end{enumerate} <<<
 
 \begin{enumerate}
-  \item Diagnosticar el proceso actual de solicitud y resguardo documental, identificando tiempos de atención, cuellos de botella y puntos donde se pierde la trazabilidad.
-  \item Levantar y documentar los requerimientos funcionales y no funcionales del sistema con los usuarios responsables de cada oficina, y definir con ellos el alcance, la metodología de desarrollo y el cronograma de trabajo.
-  \item Diseñar la arquitectura de la solución, modelar la base de datos que soportará el registro y la trazabilidad documental, y elaborar los prototipos de interfaz de los procesos de solicitud, carga, consulta y visualización de indicadores.
-  \item Crear y configurar el entorno virtualizado que alojará la solución, así como el entorno de desarrollo, el gestor de base de datos y el control de versiones del proyecto.
-  \item Desarrollar el módulo de autenticación con roles y permisos diferenciados según el perfil y la oficina de adscripción del usuario.
-  \item Desarrollar el módulo de solicitud y carga de documentos con validación de formato, tamaño y captura de metadatos, e implementar el componente de consulta y visualización en línea con registro de bitácora de accesos.
-  \item Desarrollar el módulo de control estadístico que muestre el volumen documental por usuario, oficina, tipo de documento y periodo, con reportes exportables.
-  \item Ejecutar las pruebas funcionales, de integración y de seguridad, corrigiendo las incidencias detectadas, y liberar el sistema a producción en el entorno virtualizado con respaldos, monitoreo y pruebas de operación real.
-  \item Elaborar los manuales técnico y de usuario, capacitar al personal del Instituto e integrar el reporte final de estadías.
+  \item \textbf{Diagnosticar} el proceso vigente de solicitud y resguardo documental, identificando tiempos de atención, cuellos de botella y puntos donde se pierde la trazabilidad. \textit{Verificable con} el documento de diagnóstico y la caracterización del flujo.
+  \item \textbf{Especificar} los requerimientos funcionales y no funcionales del sistema con los responsables de cada oficina, y definir con ellos el alcance, la metodología de desarrollo y el cronograma. \textit{Verificable con} el catálogo de requerimientos y las actas de validación firmadas.
+  \item \textbf{Diseñar} la arquitectura de la solución, el modelo de datos que soporta el registro y la trazabilidad documental, y los prototipos de interfaz de los procesos de solicitud, carga, consulta y visualización de indicadores. \textit{Verificable con} el diagrama entidad-relación, el documento de arquitectura y los prototipos validados con usuarios.
+  \item \textbf{Implementar} el entorno virtualizado que aloja la solución y el entorno de desarrollo, incluyendo sistema operativo, servicios base, red, usuarios, gestor de base de datos y control de versiones. \textit{Verificable con} el entorno operando y el repositorio con historial de cambios.
+  \item \textbf{Desarrollar} los cuatro módulos funcionales del sistema: autenticación con permisos diferenciados por perfil y oficina de adscripción; solicitud y carga de documentos con validación y captura de metadatos; consulta y visualización en línea con bitácora de accesos; y control estadístico con reportes exportables. \textit{Verificable con} cada módulo en operación y las pruebas por historia de usuario.
+  \item \textbf{Liberar y transferir} la solución, ejecutando las pruebas funcionales, de integración y de seguridad, poniéndola en producción con respaldos y monitoreo, y entregando los manuales técnico y de usuario junto con la capacitación al personal. \textit{Verificable con} las evidencias de prueba, el acta de liberación y la lista de asistencia a la capacitación.
 \end{enumerate}
 
-Los nueve objetivos específicos agrupan, sin omitir ninguna, las catorce actividades comprometidas en el registro del proyecto ante la Universidad, y cada uno se verifica con un entregable: el documento de diagnóstico, el catálogo de requerimientos validado, el modelo de datos y los prototipos, el entorno virtualizado operando, cada módulo funcionando, las evidencias de prueba, el acta de liberación y los manuales entregados.
+Los seis objetivos específicos agrupan, sin omitir ninguna, las catorce actividades comprometidas en el registro del proyecto ante la Universidad. La Tabla~\ref{tab:objetivos_actividades} establece esa correspondencia, de modo que cada actividad registrada tenga un objetivo que la respalde y ningún objetivo carezca de actividad que lo ejecute.
 
-
+\begin{table}[H]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{5pt}
+  \renewcommand{\arraystretch}{1.2}
+  \caption{Correspondencia entre los objetivos específicos y las actividades registradas del proyecto.}
+  \label{tab:objetivos_actividades}
+  \begin{tabular}{@{}cp{10.6cm}c@{}}
+    \toprule
+    \textbf{Objetivo} & \textbf{Actividad registrada} & \textbf{Núm.} \\
+    \midrule
+    1 & Diagnosticar el proceso actual de solicitud y resguardo documental, identificando tiempos de atención, cuellos de botella y puntos donde se pierde la trazabilidad & 1 \\
+    2 & Levantar los requerimientos funcionales y no funcionales del sistema con los usuarios responsables de cada oficina & 2 \\
+    2 & Definir el alcance, los objetivos específicos, la metodología de desarrollo y el cronograma de trabajo del proyecto & 3 \\
+    3 & Diseñar la arquitectura de la solución y modelar la base de datos que soportará el registro y la trazabilidad documental & 4 \\
+    3 & Diseñar los prototipos de interfaz para los procesos de solicitud, carga, consulta y visualización de indicadores & 5 \\
+    4 & Crear y configurar el entorno virtualizado que alojará la solución, incluyendo sistema operativo, red, servicios base y usuarios & 6 \\
+    4 & Configurar el entorno de desarrollo, el gestor de base de datos y el control de versiones del proyecto & 7 \\
+    5 & Desarrollar el módulo de autenticación con roles y permisos diferenciados según el perfil y la oficina de adscripción del usuario & 8 \\
+    5 & Desarrollar el módulo de solicitud y carga de documentos con validación de formato, tamaño y captura de metadatos & 9 \\
+    5 & Implementar el componente de consulta y visualización de documentos en línea con registro de bitácora de accesos & 10 \\
+    5 & Desarrollar el módulo de control estadístico que muestre el volumen documental por usuario, oficina, tipo de documento y periodo, con reportes exportables & 11 \\
+    6 & Ejecutar las pruebas funcionales, de integración y de seguridad, corrigiendo las incidencias detectadas & 12 \\
+    6 & Liberar el sistema a producción en el entorno virtualizado, configurando respaldos, monitoreo y realizando pruebas de operación real & 13 \\
+    6 & Elaborar los manuales técnico y de usuario, capacitar al personal e integrar el reporte final de estadías & 14 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{Justificación} \label{sec:justificacion} % audit:req=justificacion
 
