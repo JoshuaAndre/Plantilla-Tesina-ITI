@@ -13,5 +13,6 @@
 *.synctex.gz
 *.toc
 *-blx.bib
-main.pdf
+# main.pdf se versiona a proposito: el director revisa el PDF compilado
+# junto con las fuentes. Recompilar y volver a confirmarlo en cada avance.
 *.loa
