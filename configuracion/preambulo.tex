@@ -29,6 +29,7 @@
 \usepackage{pdflscape}
 \usepackage{afterpage}
 \usepackage{array,booktabs,ragged2e}    % booktabs: \toprule \midrule \bottomrule en las tablas
+\usepackage{tabularx}                   % columnas X de ancho elastico, evitan desbordamientos
 \usepackage{wallpaper}
 \usepackage[overload]{textcase}
 \usepackage{datetime}
@@ -96,6 +97,11 @@
 \newtcolorbox{guiabox}[1][]{breakable, enhanced jigsaw, colback=yellow!10, colframe=orange!70!black,
   fonttitle=\bfseries\small, title={#1}, boxrule=0.6pt, arc=2pt, left=5pt, right=5pt, top=3pt, bottom=3pt,
   fontupper=\small, before skip=8pt, after skip=10pt}
+% Nota: cuando las guias estan ocultas su contenido se compone igualmente dentro
+% de una caja que luego se descarta. Al hacerlo con el ancho normal del texto, los
+% ejemplos con \verb (que no admiten division silabica) producen avisos de
+% «Overfull \hbox» que nunca llegan a verse en el PDF. Se le da a esa caja un ancho
+% holgado para que esos avisos no aparezcan; no altera el documento impreso.
 \newenvironment{guia}[1][Guía para el alumno]
-  {\ifguias\begin{guiabox}[#1]\else\setbox0\vbox\bgroup\fi}
+  {\ifguias\begin{guiabox}[#1]\else\setbox0\vbox\bgroup\hsize=3\textwidth\relax\fi}
   {\ifguias\end{guiabox}\else\egroup\fi}
