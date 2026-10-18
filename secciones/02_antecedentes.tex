@@ -114,7 +114,7 @@ Estas cuatro plataformas comparten una característica determinante: fueron conc
 
 
 
-\subsubsection{Tabla comparativa de antecedentes} \label{subsec:tabla_comparativa_antecedentes} % audit:req=tabla_comparativa
+\subsubsection{Análisis comparativo de antecedentes} \label{subsec:tabla_comparativa_antecedentes} % audit:req=tabla_comparativa
 
 \begin{guia}[Guía: Tabla comparativa de antecedentes (Revisión 1)]
 \textbf{¿Para qué sirve?} Compara de forma objetiva los trabajos o sistemas existentes con lo que propones.
@@ -156,29 +156,43 @@ significativos.
 
 \begin{table}[H]
   \centering
-  \footnotesize
-  \setlength{\tabcolsep}{4pt}
-  \renewcommand{\arraystretch}{1.25}
-  \caption{Comparación de las plataformas de gestión documental revisadas con la propuesta.}
+  \small
+  \renewcommand{\arraystretch}{1.3}
+  \caption{Comparación de las plataformas de gestión documental revisadas con la propuesta, según los cinco criterios de divergencia.}
   \label{tab:comparativa_antecedentes}
-  \begin{tabular}{@{}p{2.3cm}p{2.3cm}p{2.3cm}p{2.3cm}p{2.3cm}p{2.3cm}@{}}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.3cm}
+      >{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}X
+      >{\raggedright\arraybackslash}X@{}}
     \toprule
-    \textbf{Sistema} & \textbf{Ámbito de permisos} & \textbf{Folio institucional único} & \textbf{Turnado y acuse} & \textbf{Consulta sin descarga} & \textbf{Estadística institucional} \\
+    \textbf{Sistema} & \textbf{Folio institucional único} & \textbf{Ámbito de datos} & \textbf{Turnado y acuse} & \textbf{Consulta sin descarga} & \textbf{Control estadístico} \\
     \midrule
-    Alfresco Community \cite{alfresco} & Rol y carpeta & Requiere desarrollo & Configurable por flujo & No predeterminada & Herramienta externa \\
-    OpenKM Community \cite{openkm} & Rol y carpeta & Requiere desarrollo & Configurable por flujo & No predeterminada & Herramienta externa \\
-    Mayan EDMS \cite{mayanedms} & Rol y etiqueta & Requiere desarrollo & No contemplado & No predeterminada & Herramienta externa \\
-    SeedDMS \cite{seeddms} & Rol y carpeta & Requiere desarrollo & No contemplado & No predeterminada & No contemplada \\
+    Alfresco Community \cite{alfresco} & Requiere desarrollo & Rol y carpeta & Configurable por flujo & No predeterminada & Herramienta externa \\
+    OpenKM Community \cite{openkm} & Requiere desarrollo & Rol y carpeta & Configurable por flujo & No predeterminada & Herramienta externa \\
+    Mayan EDMS \cite{mayanedms} & Requiere desarrollo & Rol y etiqueta & No contemplado & No predeterminada & Herramienta externa \\
+    SeedDMS \cite{seeddms} & Requiere desarrollo & Rol y carpeta & No contemplado & No predeterminada & No contemplada \\
     \midrule
-    \textbf{Propuesta (este trabajo)} & Intersección de rol y oficina de adscripción & Generado por el sistema con clave de oficina y consecutivo anual & Estado del documento con fechas de turnado y acuse & Modo predeterminado; descarga con permiso y motivo & Derivada de la bitácora por oficina, usuario, tipo y periodo \\
+    \textbf{Propuesta (este trabajo)} & Generado por el sistema con clave de oficina y consecutivo anual & Intersección de rol y oficina de adscripción & Estado del documento con fechas de turnado y acuse & Modo predeterminado; descarga con permiso y motivo & Derivado de la bitácora por oficina, usuario, tipo y periodo \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
 \end{table}
+% >>> ESCRIBE AQUÍ el análisis de la tabla comparativa (cítala con Tabla~\ref{tab:comparativa_antecedentes}) <<<
 
 
-La Tabla~\ref{tab:comparativa_antecedentes} permite una lectura que no es la esperada. Las cuatro plataformas revisadas cubren adecuadamente las funciones genéricas de gestión documental: todas versionan, todas auditan y todas controlan el acceso por rol. Si el problema del Instituto fuera únicamente almacenar documentos con orden, cualquiera de ellas lo resolvería y este proyecto carecería de justificación.
 
-La divergencia aparece en las cinco columnas de la comparación, que recogen las reglas propias de la institución. El folio institucional único, compuesto a partir de la clave de oficina y un consecutivo anual, responde directamente a la ausencia de identificador común entre oficinas y ninguna plataforma lo trae de origen. El ámbito de datos determinado por la oficina de adscripción exige que el permiso efectivo resulte de la intersección entre el rol del usuario y la unidad a la que pertenece, mientras que las plataformas revisadas resuelven el ámbito por carpeta o por etiqueta, estructuras que no corresponden a la organización administrativa real. El ciclo de turnado y acuse de recepción, que reproduce digitalmente el sello de recibido y hace visible el tránsito hoy invisible del documento, solo es alcanzable mediante configuración de flujos de trabajo en dos de las cuatro. La consulta sin descarga como comportamiento predeterminado no es el modo de operación de ninguna de ellas. Y el control estadístico expresado en las categorías administrativas que el Instituto utiliza requeriría, en todos los casos, una herramienta externa alimentada por separado.
+La Tabla~\ref{tab:comparativa_antecedentes} evidencia que las soluciones existentes no satisfacen los requerimientos específicos del Instituto. Las cuatro plataformas revisadas cubren adecuadamente las funciones genéricas de gestión documental: todas versionan, todas auditan y todas controlan el acceso por rol. Si el problema del Instituto fuera únicamente almacenar documentos con orden, cualquiera de ellas lo resolvería y este proyecto carecería de justificación.
+
+La divergencia se concentra en los cinco criterios que forman las columnas de la tabla, que recogen las reglas propias de la institución:
+
+\begin{enumerate}[nosep]
+  \item \textbf{Folio institucional único.} Compuesto a partir de la clave de oficina y un consecutivo anual, responde directamente a la ausencia de identificador común entre oficinas. Ninguna plataforma lo incorpora de origen.
+  \item \textbf{Ámbito de datos.} El permiso efectivo debe resultar de la intersección entre el rol del usuario y la oficina a la que pertenece, mientras que las plataformas revisadas resuelven el ámbito por carpeta o por etiqueta, estructuras que no corresponden a la organización administrativa real.
+  \item \textbf{Turnado y acuse.} El ciclo que reproduce digitalmente el sello de recibido y hace visible el tránsito hoy invisible del documento solo es alcanzable mediante configuración de flujos de trabajo, y únicamente en dos de las cuatro plataformas.
+  \item \textbf{Consulta sin descarga.} Como comportamiento predeterminado no es el modo de operación de ninguna de ellas.
+  \item \textbf{Control estadístico.} Expresado en las categorías administrativas que el Instituto utiliza, requeriría en todos los casos una herramienta externa alimentada por separado.
+\end{enumerate}
 
 A ello se suman las restricciones del contexto. El proyecto debe entregarse en un cuatrimestre, sin presupuesto para licenciamiento, sobre infraestructura provista por el Instituto y en condiciones que permitan a su área técnica mantener la solución sin dependencia del desarrollador. Adoptar una plataforma de propósito general implicaría dedicar el tiempo disponible a configurarla y adaptarla a reglas para las que no fue concebida, con un resultado más extenso en funciones pero menos ajustado al proceso y considerablemente más costoso de sostener.
 
