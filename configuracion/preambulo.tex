@@ -100,8 +100,8 @@
 % Nota: cuando las guias estan ocultas su contenido se compone igualmente dentro
 % de una caja que luego se descarta. Al hacerlo con el ancho normal del texto, los
 % ejemplos con \verb (que no admiten division silabica) producen avisos de
-% «Overfull \hbox» que nunca llegan a verse en el PDF. Se le da a esa caja un ancho
-% holgado para que esos avisos no aparezcan; no altera el documento impreso.
+% «Overfull \hbox» que nunca llegan a verse en el PDF. Como esa caja se descarta,
+% se silencian los avisos de composicion de su contenido; no altera el documento.
 \newenvironment{guia}[1][Guía para el alumno]
-  {\ifguias\begin{guiabox}[#1]\else\setbox0\vbox\bgroup\hsize=3\textwidth\relax\fi}
+  {\ifguias\begin{guiabox}[#1]\else\setbox0\vbox\bgroup\hbadness=10000 \hfuzz=\maxdimen\relax\fi}
   {\ifguias\end{guiabox}\else\egroup\fi}

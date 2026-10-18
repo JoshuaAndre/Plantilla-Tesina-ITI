@@ -142,26 +142,31 @@ Los seis objetivos específicos agrupan, sin omitir ninguna, las catorce activid
   \renewcommand{\arraystretch}{1.2}
   \caption{Correspondencia entre los objetivos específicos y las actividades registradas del proyecto.}
   \label{tab:objetivos_actividades}
-  \begin{tabular}{@{}cp{10.6cm}c@{}}
+  \begin{tabularx}{\textwidth}{@{}c>{\raggedright\arraybackslash}Xc@{}}
     \toprule
     \textbf{Objetivo} & \textbf{Actividad registrada} & \textbf{Núm.} \\
     \midrule
     1 & Diagnosticar el proceso actual de solicitud y resguardo documental, identificando tiempos de atención, cuellos de botella y puntos donde se pierde la trazabilidad & 1 \\
+    \addlinespace[0.35em]
     2 & Levantar los requerimientos funcionales y no funcionales del sistema con los usuarios responsables de cada oficina & 2 \\
-    2 & Definir el alcance, los objetivos específicos, la metodología de desarrollo y el cronograma de trabajo del proyecto & 3 \\
+     & Definir el alcance, los objetivos específicos, la metodología de desarrollo y el cronograma de trabajo del proyecto & 3 \\
+    \addlinespace[0.35em]
     3 & Diseñar la arquitectura de la solución y modelar la base de datos que soportará el registro y la trazabilidad documental & 4 \\
-    3 & Diseñar los prototipos de interfaz para los procesos de solicitud, carga, consulta y visualización de indicadores & 5 \\
+     & Diseñar los prototipos de interfaz para los procesos de solicitud, carga, consulta y visualización de indicadores & 5 \\
+    \addlinespace[0.35em]
     4 & Crear y configurar el entorno virtualizado que alojará la solución, incluyendo sistema operativo, red, servicios base y usuarios & 6 \\
-    4 & Configurar el entorno de desarrollo, el gestor de base de datos y el control de versiones del proyecto & 7 \\
+     & Configurar el entorno de desarrollo, el gestor de base de datos y el control de versiones del proyecto & 7 \\
+    \addlinespace[0.35em]
     5 & Desarrollar el módulo de autenticación con roles y permisos diferenciados según el perfil y la oficina de adscripción del usuario & 8 \\
-    5 & Desarrollar el módulo de solicitud y carga de documentos con validación de formato, tamaño y captura de metadatos & 9 \\
-    5 & Implementar el componente de consulta y visualización de documentos en línea con registro de bitácora de accesos & 10 \\
-    5 & Desarrollar el módulo de control estadístico que muestre el volumen documental por usuario, oficina, tipo de documento y periodo, con reportes exportables & 11 \\
+     & Desarrollar el módulo de solicitud y carga de documentos con validación de formato, tamaño y captura de metadatos & 9 \\
+     & Implementar el componente de consulta y visualización de documentos en línea con registro de bitácora de accesos & 10 \\
+     & Desarrollar el módulo de control estadístico que muestre el volumen documental por usuario, oficina, tipo de documento y periodo, con reportes exportables & 11 \\
+    \addlinespace[0.35em]
     6 & Ejecutar las pruebas funcionales, de integración y de seguridad, corrigiendo las incidencias detectadas & 12 \\
-    6 & Liberar el sistema a producción en el entorno virtualizado, configurando respaldos, monitoreo y realizando pruebas de operación real & 13 \\
-    6 & Elaborar los manuales técnico y de usuario, capacitar al personal e integrar el reporte final de estadías & 14 \\
+     & Liberar el sistema a producción en el entorno virtualizado, configurando respaldos, monitoreo y realizando pruebas de operación real & 13 \\
+     & Elaborar los manuales técnico y de usuario, capacitar al personal e integrar el reporte final de estadías & 14 \\
     \bottomrule
-  \end{tabular}
+  \end{tabularx}
 \end{table}
 
 \subsection{Justificación} \label{sec:justificacion} % audit:req=justificacion
