@@ -1,0 +1,68 @@
+\documentclass[border=6pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,shapes.geometric}
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\small,
+  node distance=8mm and 10mm,
+  etapa/.style={rectangle, rounded corners=1.2pt, draw=black!55, fill=white,
+                align=center, text width=28mm, minimum height=11mm, inner sep=3pt},
+  estado/.style={rectangle, draw=black!30, fill=black!5, align=center,
+                 text width=24mm, minimum height=7mm, inner sep=2.5pt, font=\scriptsize},
+  reg/.style={rectangle, rounded corners=1.2pt, draw=black!45, fill=black!8,
+              align=center, text width=30mm, minimum height=9mm, inner sep=3pt, font=\scriptsize},
+  flecha/.style={-{Latex[length=2mm]}, draw=black!65},
+  traza/.style={-{Latex[length=1.6mm]}, draw=black!45, dashed}
+]
+
+% --- etapas del proceso ---
+\node[etapa] (e1) {\textbf{1. Registro}\\[1pt]\scriptsize asignación de folio};
+\node[etapa, right=of e1] (e2) {\textbf{2. Carga}\\[1pt]\scriptsize documento digital};
+\node[etapa, right=of e2] (e3) {\textbf{3. Turnado}\\[1pt]\scriptsize a oficina destino};
+\node[etapa, right=of e3] (e4) {\textbf{4. Acuse}\\[1pt]\scriptsize recepción confirmada};
+\node[etapa, right=of e4] (e5) {\textbf{5. Resguardo}\\[1pt]\scriptsize expediente cerrado};
+
+\foreach \a/\b in {e1/e2, e2/e3, e3/e4, e4/e5}
+  \draw[flecha] (\a) -- (\b);
+
+% --- estados resultantes ---
+\node[estado, below=5mm of e1] (s1) {\texttt{registrado}};
+\node[estado, below=5mm of e2] (s2) {\texttt{con\_documento}};
+\node[estado, below=5mm of e3] (s3) {\texttt{en\_tramite}};
+\node[estado, below=5mm of e4] (s4) {\texttt{recibido}};
+\node[estado, below=5mm of e5] (s5) {\texttt{resguardado}};
+
+\foreach \e/\s in {e1/s1, e2/s2, e3/s3, e4/s4, e5/s5}
+  \draw[draw=black!35] (\e) -- (\s);
+
+% --- bitacora ---
+\node[reg, below=12mm of s3] (bit)
+  {\textbf{Bitácora}\\[1pt] usuario · fecha y hora · acción · folio};
+
+\foreach \s in {s1,s2,s3,s4,s5}
+  \draw[traza] (\s) -- (bit);
+
+% --- cancelacion ---
+\node[estado, above=10mm of e3] (sc)
+  {\texttt{cancelado}\\[1pt]\scriptsize con motivo asentado};
+\draw[flecha, dashed] (e3.north) -- (sc.south);
+\draw[traza] (sc.west) -- ++(-0.75,0) |- (bit.west);
+
+% --- control estadistico ---
+\node[reg, below=7mm of bit] (est)
+  {\textbf{Control estadístico}\\[1pt] derivado de la bitácora};
+\draw[flecha] (bit) -- (est);
+
+\begin{scope}[on background layer]
+  \node[draw=black!30, dashed, rounded corners=2pt, inner sep=5mm,
+        fit=(e1)(e5)(s1)(s5)(sc),
+        label={[anchor=north west, font=\scriptsize\itshape, text=black!55]north west:
+        Ciclo de vida de la solicitud}] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{document}

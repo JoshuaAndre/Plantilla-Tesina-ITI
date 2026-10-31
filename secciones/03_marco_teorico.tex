@@ -34,11 +34,183 @@ propuesta.
 
 % >>> REVISIÓN 2: ESCRIBE AQUÍ el marco teórico (introducción breve y una \subsection por tema) <<<
 
-El presente capítulo reúne los conceptos, normas y tecnologías que sustentan las decisiones tomadas a lo largo del proyecto. Su propósito es doble. Por una parte, establece el vocabulario común que permite comprender en qué consiste la trazabilidad documental y por qué su ausencia, y no la falta de digitalización, constituye el problema que el sistema viene a resolver. Por otra, documenta los fundamentos técnicos sobre los que se construye la solución: el modelo de calidad con el que se clasifican los requisitos, los principios de diseño de bases de datos que hacen posible generar un folio único bajo concurrencia, los mecanismos de control de acceso que combinan rol y unidad administrativa, y las prácticas de virtualización que permiten un despliegue reproducible.
+El presente capítulo reúne los conceptos, normas y tecnologías que sustentan las decisiones tomadas a lo largo del proyecto. Su propósito es doble. Por una parte, establece el vocabulario común que permite comprender en qué consiste la trazabilidad documental y por qué su ausencia, y no la falta de digitalización, constituye el problema que el sistema viene a resolver. Por otra, documenta los fundamentos técnicos sobre los que se construye la solución: el modelo de calidad con el que se clasifican los requerimientos, los principios de diseño de bases de datos que hacen posible generar un folio único bajo concurrencia, los mecanismos de control de acceso que combinan rol y unidad administrativa, y las prácticas de virtualización que permiten un despliegue reproducible.
 
 El capítulo no pretende ser un compendio exhaustivo de cada disciplina que toca, sino el conjunto mínimo y suficiente para que un lector con formación en tecnologías de la información pueda seguir el razonamiento del documento y evaluar si las decisiones adoptadas son las adecuadas. Los temas se presentan en el orden en que se emplean a lo largo del trabajo, de modo que cada concepto quede explicado antes de ser utilizado.
 
+\subsection{Gestión documental y documentos de archivo}
+\label{subsec:mt_gestion_documental}
 
+\subsubsection{Documento de archivo y ciclo de vida documental}
+
+Un \emph{documento de archivo} se distingue de un archivo electrónico cualquiera porque da testimonio de una actividad: no solo contiene información, sino que prueba que algo ocurrió, quién lo hizo y cuándo. Esa condición probatoria es la que obliga a administrarlo a lo largo de todo su ciclo de vida y no únicamente a almacenarlo.
+
+El ciclo de vida documental comprende cuatro etapas sucesivas: la producción, cuando el documento se genera o se recibe; el trámite, mientras se encuentra en uso activo para resolver un asunto; la concentración, cuando su consulta disminuye pero debe conservarse por razones legales o administrativas; y el destino final, en el que se determina su conservación permanente o su baja documental.
+
+Esta distinción explica una de las decisiones centrales del sistema propuesto. Un repositorio que se limite a guardar archivos solo puede responder dónde está un documento. Un sistema que modele estados —registrado, en trámite, recibido, resguardado— puede además responder en qué momento de su ciclo se encuentra y qué corresponde hacer con él. Por esa razón la solución expuesta en la Sección~\ref{sec:propuesta} modela el documento como una entidad con estado y no como un simple registro de archivo.
+
+\subsubsection{Atributos de un documento fidedigno}
+
+La norma ISO 15489-1 establece los conceptos y principios para la creación, captura y gestión de documentos de archivo, y define cuatro atributos que un documento debe reunir para ser considerado fidedigno \cite{iso15489}. La Tabla~\ref{tab:atributos_iso} relaciona cada atributo con el mecanismo concreto que lo garantiza en el sistema propuesto, de modo que la norma no quede como una referencia nominal sino como un criterio de diseño verificable.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.3}
+  \caption{Atributos de un documento fidedigno según ISO 15489-1 y el mecanismo que los garantiza en el sistema.}
+  \label{tab:atributos_iso}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Atributo} & \textbf{Qué exige} & \textbf{Mecanismo en el sistema} \\
+    \midrule
+    Autenticidad & Que el documento sea lo que afirma ser y provenga de quien dice provenir & Folio institucional único generado por el sistema y autoría registrada en cada movimiento \\
+    Fiabilidad & Que su contenido represente fielmente la actuación que documenta & Captura de metadatos obligatorios por tipo documental y validación en el servidor \\
+    Integridad & Que no haya sido alterado sin autorización ni sin dejar constancia & Huella criptográfica por versión y versionado no destructivo con motivo de cambio \\
+    Disponibilidad & Que pueda localizarse, recuperarse y presentarse cuando se requiera & Búsqueda por folio, asunto y metadatos, y política de respaldo con restauración probada \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection{Metadatos documentales}
+
+Los metadatos son los datos que describen al documento y su contexto de producción. Cumplen dos funciones que conviene distinguir. La primera es la \emph{recuperación}: sin metadatos, localizar un documento exige abrirlo. La segunda, menos evidente pero más relevante para este proyecto, es la \emph{prueba}: los metadatos registran quién produjo el documento, en qué fecha, bajo qué expediente y con qué relación respecto de otros documentos, de modo que el contexto sobrevive aunque las personas cambien.
+
+El sistema distingue entre metadatos fijos, comunes a todo documento —folio, tipo documental, oficina de origen, fecha—, y metadatos variables, que el administrador configura por tipo documental. Esta separación responde directamente al hallazgo de registro heterogéneo descrito en el planteamiento del problema: en lugar de imponer un formulario único o dejar la captura a criterio de cada oficina, el sistema permite definir qué campos son obligatorios para cada clase de documento.
+
+\subsubsection{Trazabilidad y pista de auditoría}
+
+La \emph{trazabilidad documental} es la capacidad de reconstruir el recorrido completo de un documento: qué se hizo con él, quién lo hizo, cuándo y desde dónde. Su realización técnica es la \emph{pista de auditoría}, un registro cronológico de los eventos que ocurren sobre un recurso.
+
+Para que una pista de auditoría tenga valor probatorio debe satisfacer tres condiciones. El primero es la \textbf{inmutabilidad}: los asientos no pueden modificarse ni eliminarse una vez escritos. El segundo es la \textbf{completitud}: todo evento relevante debe quedar registrado, pues una pista con huecos no permite afirmar que algo no ocurrió, solo que no fue registrado. El tercero es el \textbf{no repudio}: cada asiento debe poder atribuirse de manera inequívoca a un actor determinado.
+
+De estos tres requerimientos, el de inmutabilidad es el que condiciona con mayor fuerza el diseño. Una bitácora cuya inmutabilidad dependa de que el código de aplicación no ofrezca funciones de edición es tan sólida como la disciplina de quien lo mantenga: basta una consulta directa a la base de datos para alterarla. Por esa razón el sistema propuesto traslada la garantía al motor de almacenamiento, revocando al usuario de la aplicación los privilegios de actualización y borrado sobre la tabla de bitácora. Esta es la decisión que convierte la trazabilidad en una propiedad del sistema y no en una promesa de su documentación.
+
+\subsection{Ingeniería de software}
+\label{subsec:mt_ingenieria}
+
+\subsubsection{Ingeniería de requerimientos}
+
+La norma ISO/IEC/IEEE 29148 establece los procesos del ciclo de vida relativos a la ingeniería de requerimientos \cite{iso29148}. Distingue entre \emph{requerimientos funcionales}, que describen qué debe hacer el sistema, y \emph{requerimientos no funcionales}, que describen con qué nivel de calidad debe hacerlo.
+
+La norma plantea cuatro actividades encadenadas. La \emph{elicitación} obtiene los requerimientos de sus fuentes, que en este proyecto son los responsables de cada oficina y la normativa aplicable. El \emph{análisis} resuelve ambigüedades y contradicciones. La \emph{especificación} los formula de manera verificable, evitando enunciados como «el sistema será rápido» que no admiten comprobación. Y la \emph{validación} confirma con los interesados que lo especificado corresponde a lo que necesitan.
+
+Un concepto de la norma resulta determinante para este trabajo: la \emph{trazabilidad de requerimientos}, entendida como la capacidad de seguir cada requerimiento hasta su origen y hasta los elementos que lo implementan. Aplicada aquí, significa que ningún requerimiento del catálogo existe sin un hallazgo del diagnóstico que lo motive, y que ningún hallazgo queda sin requerimiento que lo atienda.
+
+\subsubsection{Modelo de calidad del producto de software}
+
+La norma ISO/IEC 25010 define un modelo de calidad del producto organizado en ocho características \cite{iso25010}: adecuación funcional, eficiencia de desempeño, compatibilidad, usabilidad, fiabilidad, seguridad, mantenibilidad y portabilidad.
+
+Su utilidad práctica es doble. Por una parte, ofrece una taxonomía que evita que el catálogo de requerimientos no funcionales se construya por acumulación desordenada. Por otra, obliga a formular cada requerimiento de modo que pueda verificarse: la característica de eficiencia no se satisface afirmando que el sistema responderá pronto, sino fijando un tiempo máximo de respuesta bajo una carga determinada.
+
+En este proyecto las características de \emph{seguridad} y \emph{mantenibilidad} reciben un peso superior al habitual. La primera, porque el acervo contiene datos personales en posesión de un sujeto obligado. La segunda, porque la solución debe seguir operando cuando concluya la estadía, mantenida por el área técnica del propio Instituto.
+
+\subsubsection{Modelos de proceso de desarrollo}
+
+Los modelos de proceso describen cómo se organiza el trabajo de construcción del software. Los modelos \emph{secuenciales} ejecutan las fases una tras otra y exigen que los requerimientos estén estabilizados antes de comenzar el diseño; ofrecen hitos nítidos y documentación completa, pero toleran mal el cambio \cite{sommerville2011}. Los modelos \emph{iterativos e incrementales} construyen el sistema en ciclos sucesivos, cada uno de los cuales produce una versión operativa que se somete a realimentación \cite{pressman2010}.
+
+La elección entre ambos no es una cuestión de preferencia sino de ajuste a dos condiciones del proyecto. La primera es que los requerimientos no están completamente formalizados de antemano, ya que el proceso administrativo que se automatiza nunca fue documentado por la institución. La segunda es que la fecha de término es inamovible y existen entregables comprometidos ante dos instancias. El modelo secuencial puro falla ante la primera condición; un enfoque ágil sin fases ni hitos verificables falla ante la segunda. El modelo iterativo e incremental, operado dentro de un marco de fases con hitos, satisface ambas.
+
+\subsubsection{Marco de trabajo Scrum}
+
+Scrum es un marco de trabajo ligero para el desarrollo iterativo, estructurado en torno a tres roles, cinco eventos y tres artefactos \cite{scrumguide2020}. Los roles son el dueño del producto, que decide qué se construye y en qué orden; el equipo de desarrollo, que decide cómo construirlo; y el maestro Scrum, que facilita el proceso. Los eventos principales son el \emph{sprint}, un periodo de duración fija que produce un incremento utilizable, y las reuniones de planificación, revisión y retrospectiva. Los artefactos son la pila de producto, la pila del sprint y el incremento.
+
+Scrum está concebido para equipos de varias personas, por lo que su aplicación a un proyecto de estadía individual exige adaptaciones explícitas, que se detallan en la Sección~\ref{sec:propuesta}. El rol de dueño del producto recae en el asesor empresarial; los de equipo y maestro Scrum se concentran en el estadista; y la reunión diaria se sustituye por una bitácora de avance, impedimentos y decisiones.
+
+\subsubsection{Arquitectura de software}
+
+La arquitectura de un sistema es el conjunto de estructuras que lo componen, formadas por elementos, las relaciones entre ellos y sus propiedades visibles \cite{bass2021}. Su rasgo distintivo es que determina las propiedades que resultan costosas de modificar una vez construido el sistema.
+
+De ahí se desprende el principio que ordena el diseño de este proyecto: los \emph{atributos de calidad} actúan como fuerzas que condicionan las decisiones arquitectónicas. Una arquitectura no es buena o mala en abstracto, sino adecuada o inadecuada respecto de los atributos que el sistema debe privilegiar. En el caso del sistema propuesto, la auditabilidad, la confidencialidad y la mantenibilidad por terceros preceden al rendimiento, y esa jerarquía explica decisiones que de otro modo parecerían arbitrarias, como entregar los archivos por flujo controlado en lugar de servirlos directamente.
+
+La \emph{arquitectura en capas} organiza el sistema en niveles con responsabilidades diferenciadas, sujetos a una regla de dependencia: las capas superiores dependen de las inferiores y nunca al revés. Su beneficio es la sustituibilidad, ya que cambiar el mecanismo de presentación no debería obligar a modificar las reglas de negocio.
+
+\subsection{Bases de datos y modelado}
+\label{subsec:mt_bases_datos}
+
+\subsubsection{Modelo relacional y modelo entidad-re\-la\-ción}
+
+El modelo relacional organiza los datos en relaciones, representadas como tablas de filas y columnas, sobre las que se definen restricciones de integridad \cite{elmasri2016}. La \emph{normalización} es el proceso que elimina la redundancia distribuyendo los atributos entre relaciones, de modo que cada dato se almacene una sola vez.
+
+El modelo entidad-re\-la\-ción es la notación con la que se diseña el esquema antes de implementarlo: identifica las entidades del dominio, sus atributos y las relaciones entre ellas, con sus cardinalidades. Su traducción al esquema físico convierte cada entidad en una tabla y cada relación en una clave foránea o en una tabla intermedia.
+
+\subsubsection{Transacciones y propiedades ACID}
+
+Una \emph{transacción} es una unidad de trabajo que se ejecuta por completo o no se ejecuta en absoluto. Las propiedades que la caracterizan se conocen por el acrónimo ACID: atomicidad, consistencia, aislamiento y durabilidad \cite{elmasri2016}.
+
+Estas propiedades sustentan uno de los mecanismos centrales del sistema. El folio institucional debe ser único e irrepetible, pero si dos usuarios registran un documento en el mismo instante, ambos podrían leer el mismo consecutivo y producir folios duplicados. La solución consiste en obtener el consecutivo dentro de una transacción que bloquea la fila correspondiente hasta confirmarla, de modo que la segunda operación espere a que la primera termine. El aislamiento es, por tanto, lo que convierte la unicidad del folio en una garantía y no en una probabilidad.
+
+\subsubsection{Índices y estrategias de almacenamiento de archivos}
+
+Un \emph{índice} es una estructura auxiliar que acelera la localización de filas a costa de espacio adicional y de un mayor costo de escritura. Su diseño responde a las consultas que el sistema ejecutará con frecuencia; en este proyecto, las búsquedas por folio, las consultas filtradas por oficina y periodo, y las agregaciones del módulo estadístico.
+
+Respecto del almacenamiento de los archivos, existen dos estrategias. La primera guarda el binario en una columna de la base de datos, lo que simplifica la consistencia transaccional pero incrementa el tamaño de la base y degrada el rendimiento de las consultas. La segunda almacena el archivo en el sistema de archivos y conserva en la base únicamente su ruta y sus metadatos; mantiene la base ligera y permite respaldos diferenciados, a cambio de exigir que la aplicación mantenga la correspondencia entre ambos. El sistema propuesto adopta la segunda estrategia y compensa su principal debilidad mediante la huella criptográfica de cada archivo, que permite verificar en cualquier momento que el contenido almacenado sigue correspondiendo a lo registrado.
+
+\subsection{Tecnologías de desarrollo e infraestructura}
+\label{subsec:mt_tecnologias}
+
+\subsubsection{Aplicaciones web y marco de trabajo Laravel}
+
+Una aplicación web opera bajo el modelo cliente-servidor: el navegador envía una petición mediante el protocolo HTTP y el servidor devuelve una respuesta. Dado que HTTP no conserva estado entre peticiones, la identidad del usuario autenticado se mantiene mediante \emph{sesiones}.
+
+Laravel es un marco de trabajo para PHP que provee los componentes habituales de una aplicación web \cite{laraveldocs}: enrutamiento, una capa de acceso a datos que representa las tablas como objetos, migraciones que versionan el esquema de la base de datos, validación de entradas y políticas de autorización. Para este proyecto resultan determinantes dos de ellos. Las \emph{migraciones} permiten que el esquema se reconstruya íntegramente desde el repositorio, lo que hace reproducible el despliegue. Las \emph{políticas} concentran en un solo lugar las decisiones de autorización, de modo que la regla que combina rol y oficina de adscripción no quede dispersa por los controladores.
+
+\subsubsection{Sistema gestor de base de datos y motor de plantillas}
+
+El sistema emplea un gestor relacional con motor de almacenamiento transaccional, condición indispensable para el bloqueo de filas que garantiza la unicidad del folio. De sus capacidades, la más relevante para el diseño es el \emph{control de privilegios a nivel de tabla}, que permite revocar al usuario de la aplicación los permisos de actualización y borrado sobre la bitácora. Esa revocación es el mecanismo que traslada la inmutabilidad desde el código hacia el motor.
+
+La interfaz se construye con un motor de plantillas del lado del servidor, que genera el HTML en el servidor y lo envía ya compuesto al navegador. Frente a una interfaz construida como aplicación de página única, esta opción reduce la complejidad a un solo proyecto y un solo despliegue, lo que resulta coherente con el atributo de mantenibilidad por terceros.
+
+\subsubsection{Virtualización y contenedores}
+
+La \emph{virtualización} de máquinas emula un equipo completo, con su propio sistema operativo, sobre un anfitrión físico. La virtualización a nivel de sistema operativo, conocida como \emph{contenedores}, comparte el núcleo del anfitrión y aísla únicamente los procesos y su sistema de archivos, lo que reduce el consumo de recursos y acelera el arranque.
+
+Tres conceptos ordenan el trabajo con contenedores. La \emph{imagen} es una plantilla inmutable que contiene la aplicación y sus dependencias. El \emph{contenedor} es una instancia en ejecución de esa imagen. El \emph{volumen} es el almacenamiento persistente que sobrevive a la destrucción del contenedor, y es donde residen tanto los datos como el acervo documental.
+
+La relevancia de estos conceptos para el proyecto es directa. Al declarar el entorno completo en archivos de configuración versionados, la creación del entorno virtualizado deja de ser una secuencia de pasos manuales irrepetibles y se convierte en un procedimiento verificable, que puede ejecutarse de nuevo en caso de falla y que se documenta por sí mismo.
+
+\subsubsection{Administración de servidores y políticas de respaldo}
+
+La operación del sistema exige administrar servicios, usuarios y permisos del sistema operativo, tareas programadas y registros de eventos. En materia de respaldo, se distinguen el respaldo \emph{completo}, que copia la totalidad de los datos, y los respaldos \emph{incrementales}, que copian únicamente lo modificado desde el anterior.
+
+Dos criterios gobiernan el diseño de una política de respaldo: la \emph{ventana de recuperación}, que determina cuánta información puede perderse como máximo, y el \emph{periodo de retención}, que establece cuánto tiempo se conservan las copias. A ellos debe añadirse una condición que con frecuencia se omite: un respaldo cuya restauración no ha sido probada no constituye una garantía, sino una suposición. Por esa razón el plan de trabajo del proyecto incluye una prueba de restauración completa antes de la liberación a producción.
+
+\subsection{Seguridad de la información}
+\label{subsec:mt_seguridad}
+
+\subsubsection{Autenticación y control de acceso}
+
+La seguridad de la información se articula en torno a tres propiedades: la \emph{confidencialidad}, que restringe el acceso a quien está autorizado; la \emph{integridad}, que preserva la exactitud del dato; y la \emph{disponibilidad}, que asegura el acceso cuando se requiere.
+
+Conviene distinguir dos conceptos que suelen confundirse. La \emph{autenticación} verifica quién es el usuario; la \emph{autorización} determina qué le está permitido hacer una vez identificado. El control de acceso basado en roles agrupa los permisos en roles y asigna roles a los usuarios, lo que simplifica la administración.
+
+Sin embargo, el control basado únicamente en roles resulta insuficiente para el problema que se atiende. Un capturista de una oficina y un capturista de otra tienen el mismo rol y, por tanto, los mismos permisos, pero no deben operar sobre la misma documentación. El sistema propuesto extiende el modelo incorporando un \emph{ámbito de datos} determinado por la unidad administrativa de adscripción, de modo que el permiso efectivo resulta de la intersección entre lo que el rol autoriza y la documentación sobre la que el usuario puede ejercerlo.
+
+\subsubsection{Almacenamiento de contraseñas y funciones hash}
+
+Una \emph{función hash criptográfica} transforma una entrada de longitud arbitraria en una salida de longitud fija, con tres propiedades: es determinista, es computacionalmente inviable recuperar la entrada a partir de la salida, y un cambio mínimo en la entrada produce una salida completamente distinta.
+
+Las contraseñas no deben almacenarse en texto claro ni protegidas con un hash simple, que resulta vulnerable a tablas precalculadas. El método adecuado emplea una \emph{función de derivación de clave} con \emph{sal}, un valor aleatorio distinto por usuario que se incorpora al cálculo, y con un costo computacional deliberadamente elevado que encarece los intentos por fuerza bruta.
+
+En este proyecto las funciones hash cumplen además un segundo propósito. La huella calculada sobre cada archivo al momento de su carga permite verificar posteriormente que el contenido no fue alterado, y detectar que un archivo que se intenta cargar ya existe en el acervo. Un solo mecanismo atiende así la integridad y la detección de duplicados.
+
+\subsubsection{Vulnerabilidades en aplicaciones web y cifrado en tránsito}
+
+El proyecto OWASP publica periódicamente una relación de los riesgos más críticos en aplicaciones web \cite{owasp2021}. De ellos, cuatro inciden de manera directa en el sistema propuesto. La \emph{inyección} permite alterar una consulta a la base de datos mediante datos de entrada no validados. El \emph{control de acceso deficiente} permite acceder a recursos ajenos manipulando identificadores. La \emph{exposición de datos sensibles} se produce cuando la información viaja o se almacena sin protección adecuada. Y los \emph{fallos de configuración} dejan accesibles componentes que debieron restringirse.
+
+Frente a estos riesgos, el sistema adopta controles específicos: el acceso a datos mediante consultas parametrizadas, la validación de toda autorización en el servidor y no en la interfaz, el almacenamiento del acervo fuera de la raíz pública del servidor web, y la verificación del tipo real de los archivos cargados en lugar de confiar en su extensión declarada.
+
+El \emph{cifrado en tránsito} mediante el protocolo TLS protege la comunicación entre las estaciones de trabajo y el servidor, impidiendo que un tercero con acceso a la red institucional pueda leer o alterar la información intercambiada. Su empleo es obligatorio en un sistema que transporta documentación con datos personales.
+
+\subsection{Marco normativo aplicable}
+\label{subsec:mt_normativo}
+
+El Instituto, en su condición de sujeto obligado, se encuentra sometido a dos ordenamientos federales que condicionan directamente el diseño del sistema.
+
+La Ley General de Archivos establece los principios de organización, conservación y administración homogénea de los archivos en posesión de cualquier autoridad \cite{lga2018}. De ella se desprenden dos exigencias que el sistema atiende: la obligación de conservar los documentos conforme a su ciclo de vida, que sustenta la cancelación lógica en lugar del borrado físico, y la de mantener su contexto de producción, que sustenta el registro de la oficina, el usuario y la fecha de cada movimiento.
+
+La Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados regula el tratamiento de los datos personales contenidos en esa documentación \cite{lgpdppso2017}. Entre sus deberes, dos resultan determinantes. El \emph{deber de seguridad} obliga a establecer medidas que garanticen la protección de los datos frente a accesos no autorizados, lo que fundamenta el esquema de permisos y el cifrado en tránsito. El \emph{deber de confidencialidad} obliga a que quienes intervienen en el tratamiento guarden reserva, lo que fundamenta el registro auditable de cada consulta: no basta con restringir el acceso, debe poder demostrarse quién accedió.
+
+A estos ordenamientos federales se suma la normativa estatal que rige la actividad sustantiva del Instituto, integrada por la Ley del Registro Público de la Propiedad Inmueble y del Comercio \cite{leyrpp2008} y la Ley de Catastro para el Estado de Tamaulipas \cite{leycatastro2001}. Su relevancia para este trabajo es de delimitación: establecen qué actuaciones constituyen el acto registral, que el sistema propuesto no modifica, y permiten distinguirlas del flujo administrativo de la documentación, que es el ámbito sobre el que sí interviene.
 
 \subsection{Temas tentativos del marco teórico} \label{sec:temas_tentativos} % audit:req=temas_marco_teorico
 
@@ -58,6 +230,8 @@ o dos oraciones: ¿qué es y por qué lo necesito?
 
 % >>> REVISIÓN 1: ESCRIBE AQUÍ la lista de temas tentativos <<<
 
+Se conserva aquí la relación de los temas que sustentan el proyecto, presentada en la primera revisión y desarrollada en las subsecciones anteriores; sirve ahora como mapa de lectura del capítulo.
+
 El criterio que ordena este marco teórico es el de necesidad: se incluye únicamente aquello que el lector requiere para comprender las decisiones tomadas en el proyecto, y se excluye todo concepto que, siendo correcto, no se emplee después en el documento. Los temas se agrupan en cinco bloques que corresponden a las dimensiones del problema.
 
 \begin{description}[leftmargin=0pt,font=\bfseries,itemsep=0.6em,parsep=0pt]
@@ -66,13 +240,13 @@ El criterio que ordena este marco teórico es el de necesidad: se incluye única
     \item Documento de archivo y ciclo de vida documental: producción, trámite, concentración y destino final. Sustenta por qué el sistema modela estados y no únicamente archivos almacenados.
     \item Atributos de un documento fidedigno conforme a la norma ISO 15489-1 \cite{iso15489}: autenticidad, fiabilidad, integridad y disponibilidad, y el mecanismo del sistema que garantiza cada uno.
     \item Metadatos documentales y su función en la recuperación y en la prueba.
-    \item Trazabilidad y pista de auditoría: requisitos de inmutabilidad, completitud y no repudio. Es el concepto central del proyecto.
+    \item Trazabilidad y pista de auditoría: condiciones de inmutabilidad, completitud y no repudio. Es el concepto central del proyecto.
   \end{itemize}
 
   \item[Ingeniería de software.]\leavevmode
   \begin{itemize}[nosep,leftmargin=1.4em,topsep=1pt]
-    \item Ingeniería de requerimientos conforme a la norma ISO/IEC/IEEE 29148 \cite{iso29148}: requisitos funcionales y no funcionales, elicitación, validación y trazabilidad.
-    \item Modelo de calidad del producto de software de la norma ISO/IEC 25010 \cite{iso25010}, que organiza el catálogo de requisitos no funcionales.
+    \item Ingeniería de requerimientos conforme a la norma ISO/IEC/IEEE 29148 \cite{iso29148}: requerimientos funcionales y no funcionales, elicitación, validación y trazabilidad.
+    \item Modelo de calidad del producto de software de la norma ISO/IEC 25010 \cite{iso25010}, que organiza el catálogo de requerimientos no funcionales.
     \item Modelos de proceso secuenciales frente a iterativos e incrementales \cite{sommerville2011, pressman2010}, y adaptación del marco de trabajo Scrum \cite{scrumguide2020} a un proyecto individual con fecha de término fija.
     \item Arquitectura de software: atributos de calidad como fuerzas de diseño, registro de decisiones arquitectónicas y arquitectura en capas \cite{bass2021}.
   \end{itemize}
@@ -103,5 +277,5 @@ El criterio que ordena este marco teórico es el de necesidad: se incluye única
   \item[Marco normativo aplicable.] Disposiciones de la Ley General de Archivos \cite{lga2018} y de la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados \cite{lgpdppso2017} que inciden en el control de accesos y en el tratamiento de los datos empleados durante el desarrollo.
 \end{description}
 
-Cada bloque fundamenta un elemento concreto del proyecto, de modo que ningún tema se incluye sin uso posterior: el primero sustenta los estados del documento, el versionado y la bitácora; el segundo, el catálogo de requisitos y las decisiones de arquitectura; el tercero, el modelo de datos y la generación transaccional del folio; el cuarto, la construcción de los módulos y el entorno virtualizado; el quinto, el control de acceso y las pruebas de seguridad; y el sexto, la justificación normativa de la bitácora y del tratamiento de datos de prueba.
+Cada bloque fundamenta un elemento concreto del proyecto, de modo que ningún tema se incluye sin uso posterior: el primero sustenta los estados del documento, el versionado y la bitácora; el segundo, el catálogo de requerimientos y las decisiones de arquitectura; el tercero, el modelo de datos y la generación transaccional del folio; el cuarto, la construcción de los módulos y el entorno virtualizado; el quinto, el control de acceso y las pruebas de seguridad; y el sexto, la justificación normativa de la bitácora y del tratamiento de datos de prueba.
 
