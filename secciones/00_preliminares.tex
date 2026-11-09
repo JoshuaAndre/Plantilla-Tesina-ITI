@@ -3,6 +3,20 @@
 % Escribe tu texto FUERA de los recuadros \begin{guia} ... \end{guia}.
 % =====================================================================================
 
+% -------------------------------------------------------------------------------------
+% PRESENTACIÓN DE LAS GUÍAS (no se modifica ningún archivo protegido de la plantilla)
+% 1. Se usa el interruptor que la propia plantilla define para la versión de entrega
+%    (\guiasfalse), de modo que los recuadros de ayuda no aparezcan en el PDF.
+% 2. Al ocultarse, su contenido se sigue componiendo dentro de una caja que después se
+%    descarta. Los ejemplos con \verb no admiten división silábica y generan avisos de
+%    «Overfull \hbox» que nunca llegan al PDF; aquí se silencian solo esos avisos, sin
+%    alterar en nada la composición del documento.
+% -------------------------------------------------------------------------------------
+\guiasfalse
+\renewenvironment{guia}[1][Guía para el alumno]
+  {\ifguias\begin{guiabox}[#1]\else\setbox0\vbox\bgroup\hbadness=10000 \hfuzz=\maxdimen\relax\fi}
+  {\ifguias\end{guiabox}\else\egroup\fi}
+
 \clearpage
 \ClearWallPaper
 \pagestyle{fancy}
