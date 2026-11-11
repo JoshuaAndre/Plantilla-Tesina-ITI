@@ -11,6 +11,22 @@
 % desborden del margen. Se declara aqui porque configuracion/preambulo.tex no se toca.
 \usepackage{tabularx}
 
+% ---------- Presentación de las guías de la plantilla --------------------------------
+% La plantilla define el interruptor \guiasfalse para la versión de entrega, de modo que
+% los recuadros de ayuda no salgan en el PDF. Se aplica aquí, al iniciar el documento,
+% porque configuracion/preambulo.tex no se toca y todo el contenido de secciones/ debe ir
+% dentro de una sección.
+% Al ocultarse, el contenido de las guías se sigue componiendo en una caja que después se
+% descarta: los ejemplos con \verb no admiten división silábica y generan avisos de
+% «Overfull \hbox» que nunca llegan al PDF. La redefinición silencia solo esos avisos y no
+% altera en nada la composición del documento.
+\AtBeginDocument{%
+  \guiasfalse
+  \renewenvironment{guia}[1][Guía para el alumno]
+    {\ifguias\begin{guiabox}[##1]\else\setbox0\vbox\bgroup\hbadness=10000 \hfuzz=\maxdimen\relax\fi}
+    {\ifguias\end{guiabox}\else\egroup\fi}%
+}
+
 % ---------- Tipo de proyecto (OBLIGATORIO) ------------------------------------------
 % Escribe exactamente  sistema   o   investigacion
 %   sistema        -> página web, sistema web, API, sistema de escritorio, app móvil
