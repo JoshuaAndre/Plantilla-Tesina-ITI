@@ -1,0 +1,1365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>SITRAD — pantallas del sistema para las capturas de la tesina</title>
+<!--
+  Generado por herramientas/generar_capturas.py del repositorio del sistema.
+  El marcado reproduce las vistas Blade entregadas y la hoja de estilo que sigue es
+  public/css/sitrad.css incrustada sin modificaciones. Los datos de los expedientes son
+  ficticios; las fechas de vencimiento y el semáforo de plazo se calculan con la misma
+  aritmética de días hábiles que implementa App\Support\DiasHabiles.
+  Fecha de referencia de todas las pantallas: 20/11/2026.
+-->
+<style>
+/* =====================================================================
+   SITRAD — hoja de estilo institucional
+   Paleta del Gobierno del Estado de Tamaulipas: guinda, dorado y crema.
+   ===================================================================== */
+:root{
+    --guinda:#ab0033; --guinda-osc:#7d0025; --dorado:#bc955c; --crema:#ddc9a3;
+    --gris:#54565a; --linea:#dcdde0; --fondo:#f4f5f7; --texto:#23252a;
+    --verde:#1f7a4d; --ambar:#b8860b; --rojo:#b02a37;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Liberation Sans","DejaVu Sans",Arial,sans-serif;color:var(--texto);background:#fff}
+  .screen{width:100%;min-height:100vh;overflow:visible;background:var(--fondo);display:flex;flex-direction:column;border:1px solid var(--linea)}
+  .main{padding-bottom:22px}
+
+  /* ---------- barra superior ---------- */
+  .top{background:var(--guinda);color:#fff;height:66px;display:flex;align-items:center;padding:0 20px;gap:14px;flex:0 0 66px}
+  .mark{width:30px;height:30px;border:2px solid var(--dorado);border-radius:4px;display:grid;place-items:center;font-size:13.5px;font-weight:700;letter-spacing:.5px;color:var(--dorado)}
+  .top h1{font-size:17px;font-weight:700;letter-spacing:.2px;line-height:1.25}
+  .top h1 span{display:block;font-size:13.5px;font-weight:400;opacity:.85}
+  .user{margin-left:auto;text-align:right;font-size:14px;line-height:1.35}
+  .user b{font-size:15px;display:block;font-weight:700}
+  .user em{font-style:normal;opacity:.85}
+
+  /* ---------- cuerpo ---------- */
+  .body{display:flex;flex:1;min-height:0}
+  .side{width:174px;background:#fff;border-right:1px solid var(--linea);padding:14px 0;flex:0 0 174px}
+  .side a{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:15px;color:var(--gris);text-decoration:none;border-left:3px solid transparent}
+  .side a.on{background:#fbeef2;color:var(--guinda);font-weight:700;border-left-color:var(--guinda)}
+  .side a.off{opacity:.38}
+  .ic{width:15px;height:15px;border:1.5px solid currentColor;border-radius:3px;flex:0 0 15px}
+  .side .grp{font-size:12.5px;text-transform:uppercase;letter-spacing:.9px;color:#9aa0a6;padding:14px 18px 6px}
+
+  .main{flex:1;padding:20px 24px;overflow:hidden}
+  .crumb{font-size:14px;color:#8a9097;margin-bottom:5px}
+  .h2{font-size:23px;font-weight:700;margin-bottom:3px}
+  .sub{font-size:15px;color:var(--gris);margin-bottom:16px}
+
+  /* ---------- controles ---------- */
+  .card{background:#fff;border:1px solid var(--linea);border-radius:6px}
+  .pad{padding:16px 18px}
+  .row{display:flex;gap:12px}
+  .fil{display:flex;gap:9px;margin-bottom:14px;align-items:flex-end;flex-wrap:wrap}
+  label{display:block;font-size:13.5px;color:var(--gris);margin-bottom:4px;font-weight:700;letter-spacing:.2px}
+  .inp{height:38px;border:1px solid #c6c9ce;border-radius:4px;background:#fff;font-size:15px;padding:0 10px;display:flex;align-items:center;color:var(--texto);min-width:130px}
+  .inp.ph{color:#9aa0a6}
+  .sel::after{content:"▾";margin-left:auto;color:#8a9097;font-size:12.5px}
+  .btn{height:38px;border-radius:4px;background:var(--guinda);color:#fff;font-size:15px;font-weight:700;padding:0 16px;display:inline-flex;align-items:center;border:none}
+  .btn.sec{background:#fff;color:var(--guinda);border:1px solid var(--guinda)}
+  .btn.gh{background:#fff;color:var(--gris);border:1px solid #c6c9ce;font-weight:400}
+
+  /* ---------- tabla ---------- */
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:#7d848b;padding:10px 10px;border-bottom:1.5px solid var(--linea);white-space:nowrap}
+  td{padding:10px 10px;border-bottom:1px solid #eceef0;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .folio{font-family:"DejaVu Sans Mono","Liberation Mono",monospace;font-size:14px;white-space:nowrap}
+  .tag{display:inline-block;font-size:13px;font-weight:700;padding:2.5px 8px;border-radius:11px;white-space:nowrap}
+  .t-reg{background:#eef1f4;color:#55606b}
+  .t-doc{background:#e7f0fb;color:#1d4e89}
+  .t-tra{background:#fff3da;color:#8a6414}
+  .t-rec{background:#e6f4ec;color:var(--verde)}
+  .t-res{background:#e9e7f5;color:#4b3f8f}
+  .t-can{background:#fbeaec;color:var(--rojo)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .d-ok{background:var(--verde)} .d-rie{background:var(--ambar)} .d-ven{background:var(--rojo)}
+
+  /* ---------- varios ---------- */
+  .kpi{flex:1;background:#fff;border:1px solid var(--linea);border-radius:6px;padding:14px 16px}
+  .kpi .n{font-size:32px;font-weight:700;line-height:1.1}
+  .kpi .l{font-size:14px;color:var(--gris);margin-top:2px}
+  .kpi .d{font-size:13px;color:#8a9097;margin-top:6px}
+  .bar{height:9px;border-radius:5px;background:#eceef0;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--guinda)}
+  .note{background:#fbf7ef;border:1px solid var(--crema);border-left:3px solid var(--dorado);border-radius:4px;padding:10px 13px;font-size:14px;color:#6b5a3c}
+  .ok{background:#eef7f1;border:1px solid #bfe0cc;border-left:3px solid var(--verde);border-radius:4px;padding:12px 15px}
+  .sec-t{font-size:14.5px;font-weight:700;letter-spacing:.3px;color:var(--gris);text-transform:uppercase;margin-bottom:10px}
+  .dl{display:grid;grid-template-columns:150px 1fr;gap:7px 14px;font-size:15px}
+  .dl dt{color:var(--gris);font-weight:700;font-size:14px}
+  .vis{background:#55585d;border-radius:5px;flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .vis-bar{min-height:40px;background:#3f4247;color:#e6e7e9;display:flex;align-items:center;gap:12px;padding:5px 12px;font-size:14px}
+  /* El nombre del archivo cede espacio antes que los controles de la derecha. */
+  .vis-bar>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .vis-bar>span{flex:0 0 auto}
+  .vis-bar>span:first-child{flex:0 1 auto}
+  .vis-pg{flex:1;display:grid;place-items:center;padding:14px}
+  .paper{background:#fff;width:395px;height:100%;box-shadow:0 2px 10px rgba(0,0,0,.3);padding:26px 30px;font-size:10.5px;line-height:1.75;color:#3a3d42}
+  .paper h4{font-size:12.5px;text-align:center;margin-bottom:10px;letter-spacing:.4px}
+  .paper .ln{height:5px;background:#e8eaec;border-radius:2px;margin:5px 0}
+  .paper .ln.s{width:62%} .paper .ln.m{width:84%}
+  .pill{font-size:13px;background:#eef1f4;color:#55606b;border-radius:4px;padding:2px 7px}
+  .foot{font-size:13.5px;color:#8a9097;margin-top:10px;display:flex;align-items:center;gap:8px}
+
+/* ---------- añadidos de la aplicación (no presentes en la maqueta) ---------- */
+a{color:inherit}
+.side a{cursor:pointer}
+.side a.off{pointer-events:none}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{border:none;cursor:pointer;text-decoration:none}
+.btn.gh,.btn.sec{cursor:pointer}
+.inp{width:100%}
+/* Campo de solo lectura: un valor más largo que la caja se recorta con puntos
+   suspensivos en lugar de partirse a media palabra. */
+.inp.ro{background:#f4f5f7;color:var(--gris);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:36px}
+input.inp,select.inp,textarea.inp{font-size:15px}
+textarea.inp{height:auto;padding:8px 10px;min-height:66px}
+.error{color:var(--rojo);font-size:13px;margin-top:4px}
+.aviso{background:#fbeaec;border:1px solid #f0c2c8;border-left:3px solid var(--rojo);border-radius:4px;padding:12px 15px;font-size:14px;margin-bottom:16px}
+.exito{background:#eef7f1;border:1px solid #bfe0cc;border-left:3px solid var(--verde);border-radius:4px;padding:12px 15px;font-size:14px;margin-bottom:16px}
+.paginacion{display:flex;gap:6px;margin-top:14px;font-size:13.5px}
+.paginacion a,.paginacion span{padding:5px 10px;border:1px solid var(--linea);border-radius:4px;background:#fff;text-decoration:none}
+.paginacion .on{background:var(--guinda);color:#fff;border-color:var(--guinda)}
+.visor-marco{width:100%;height:100%;border:none;background:#fff}
+/* RNF-06 compromete la disposición de escritorio desde 1 024 px. El corte se fija en
+   860 px —y no en 1 024— porque un corte en el ancho comprometido haría que a 1 024 px
+   exactos se aplicara ya la disposición apilada, que es lo contrario de lo ofrecido.
+   Así la disposición de escritorio se sostiene desde 861 px, con holgura sobre la meta. */
+@media (max-width:860px){ .body{flex-direction:column} .side{width:100%;flex:0 0 auto;display:flex;flex-wrap:wrap} .side .grp{width:100%} }
+
+
+/* ======================================================================
+   Ajustes exclusivos de la captura. No forman parte del sistema.
+   Cada pantalla se compone a 1 000 px —ancho real de navegador, por encima
+   del corte de 860 px de la hoja institucional— y se amplía un 18 % para
+   que el texto de la interfaz resulte legible al reducir la imagen al
+   ancho de la caja de texto de la tesina.
+   ====================================================================== */
+html,body{background:#fff}
+.shot{width:1180px;overflow:hidden;background:#fff}
+.lienzo{width:1000px;transform:scale(1.18);transform-origin:top left}
+.screen{min-height:0;border:1px solid var(--linea)}
+.main{overflow:visible}
+.inp{white-space:nowrap;overflow:hidden}
+.btn{cursor:default}
+.paginacion a{color:var(--guinda)}
+
+</style>
+</head>
+<body>
+
+<!-- ===================== 1. INICIO DE SESIÓN ===================== -->
+<section class="shot" id="acceso">
+ <div class="lienzo" style="height:600px">
+  <div class="screen" style="background:#fff;height:100%">
+   <div style="flex:1;display:flex">
+    <div style="width:52%;background:linear-gradient(160deg,#ab0033,#7d0025);color:#fff;padding:60px 56px;display:flex;flex-direction:column;justify-content:center">
+     <div class="mark" style="width:46px;height:46px;font-size:17px;margin-bottom:26px">IRCT</div>
+     <h2 style="font-size:32px;line-height:1.3;font-weight:700;margin-bottom:14px">Sistema de Trazabilidad<br>Documental</h2>
+     <p style="font-size:17px;opacity:.9;line-height:1.65;max-width:400px">
+      Instituto Registral y Catastral del Estado de Tamaulipas. Registro, turnado,
+      consulta y control estadístico de la documentación institucional.
+     </p>
+     <div style="margin-top:34px;font-size:14px;opacity:.75;border-top:1px solid rgba(255,255,255,.25);padding-top:14px;max-width:400px;line-height:1.6">
+      El acceso y las operaciones realizadas en este sistema quedan asentados en la bitácora institucional.
+     </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 64px">
+     <div class="h2" style="margin-bottom:4px">Iniciar sesión</div>
+     <div class="sub" style="margin-bottom:24px">Use su cuenta institucional</div>
+
+     <label>Usuario</label>
+     <div class="inp" style="margin-bottom:15px">jalvarado</div>
+
+     <label>Contraseña</label>
+     <div class="inp" style="margin-bottom:9px;letter-spacing:3px;color:var(--gris)">••••••••••••</div>
+
+     <div style="font-size:14px;color:var(--gris);margin-bottom:20px">
+      La cuenta se bloquea tras 5 intentos fallidos consecutivos.
+     </div>
+
+     <div class="btn" style="justify-content:center;width:100%;height:44px">Entrar</div>
+
+     <div class="note" style="margin-top:22px">
+      La sesión se cierra automáticamente tras 20 minutos de inactividad.
+      El inicio y el cierre de sesión se asientan en la bitácora.
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== BANDEJA ===================== -->
+<section class="shot" id="bandeja">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Joshua A. Alvarado Tovar</b><em>Capturista · Oficina registral de Ciudad Victoria (RPV)</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class="on"><i class="ic"></i>Bandeja de expedientes</a>
+    <a class=""><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class="off"><i class="ic"></i>Reportes e indicadores</a>
+    <a class="off"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Operación › Bandeja de expedientes</div>
+    <div class="h2">Bandeja de expedientes</div>
+    <div class="sub">Oficina registral de Ciudad Victoria · 2026 · 1,248 expedientes en el ámbito del usuario · al 20/11/2026</div>
+
+    <div class="fil">
+     <div><label>Asunto o metadato</label><div class="inp ph" style="width:235px">nombre, clave catastral, asunto…</div></div>
+     <div><label>Folio</label><div class="inp ph" style="width:190px">IRCT-…</div></div>
+     <div><label>Tipo documental</label><div class="inp sel" style="width:200px">Todos</div></div>
+     <div><label>Estado</label><div class="inp sel" style="width:150px">Todos</div></div>
+     <div><label>Desde</label><div class="inp ph" style="width:160px">dd/mm/aaaa</div></div>
+     <div><label>Hasta</label><div class="inp ph" style="width:160px">dd/mm/aaaa</div></div>
+     <div class="btn">Buscar</div>
+     <div class="btn gh">Limpiar</div>
+    </div>
+
+    <div class="card">
+     <table>
+      <tr>
+       <th style="width:200px">Folio</th>
+       <th>Tipo documental</th>
+       <th style="width:130px">Estado</th>
+       <th style="width:120px">Registro</th>
+       <th style="width:120px">Plazo</th>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000412</td>
+       <td>Solicitud de certificado</td>
+       <td><span class="tag t-tra">En trámite</span></td>
+       <td>12/11/2026</td>
+       <td><span class="dot d-ven"></span>Vencido</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000411</td>
+       <td>Solicitud de inscripción registral</td>
+       <td><span class="tag t-rec">Recibido</span></td>
+       <td>16/11/2026</td>
+       <td><span class="dot d-rie"></span>1 día(s)</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000410</td>
+       <td>Solicitud de traslado de dominio</td>
+       <td><span class="tag t-doc">Con documento</span></td>
+       <td>18/11/2026</td>
+       <td><span class="dot d-ok"></span>5 día(s)</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000409</td>
+       <td>Solicitud de certificado</td>
+       <td><span class="tag t-res">Resguardado</span></td>
+       <td>17/11/2026</td>
+       <td>—</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000408</td>
+       <td>Oficio o turno interno</td>
+       <td><span class="tag t-reg">Registrado</span></td>
+       <td>20/11/2026</td>
+       <td><span class="dot d-ok"></span>2 día(s)</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000407</td>
+       <td>Solicitud de traslado de dominio</td>
+       <td><span class="tag t-can">Cancelado</span></td>
+       <td>16/11/2026</td>
+       <td>—</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000406</td>
+       <td>Solicitud de inscripción registral</td>
+       <td><span class="tag t-res">Resguardado</span></td>
+       <td>16/11/2026</td>
+       <td>—</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000405</td>
+       <td>Solicitud de traslado de dominio</td>
+       <td><span class="tag t-tra">En trámite</span></td>
+       <td>10/11/2026</td>
+       <td><span class="dot d-ven"></span>Vencido</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000404</td>
+       <td>Solicitud de certificado</td>
+       <td><span class="tag t-rec">Recibido</span></td>
+       <td>19/11/2026</td>
+       <td><span class="dot d-ok"></span>2 día(s)</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000403</td>
+       <td>Oficio o turno interno</td>
+       <td><span class="tag t-res">Resguardado</span></td>
+       <td>13/11/2026</td>
+       <td>—</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000402</td>
+       <td>Solicitud de inscripción registral</td>
+       <td><span class="tag t-doc">Con documento</span></td>
+       <td>17/11/2026</td>
+       <td><span class="dot d-ok"></span>2 día(s)</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000401</td>
+       <td>Solicitud de certificado</td>
+       <td><span class="tag t-tra">En trámite</span></td>
+       <td>11/11/2026</td>
+       <td><span class="dot d-ven"></span>Vencido</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000400</td>
+       <td>Solicitud de traslado de dominio</td>
+       <td><span class="tag t-rec">Recibido</span></td>
+       <td>12/11/2026</td>
+       <td><span class="dot d-rie"></span>1 día(s)</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000399</td>
+       <td>Solicitud de certificado</td>
+       <td><span class="tag t-res">Resguardado</span></td>
+       <td>09/11/2026</td>
+       <td>—</td>
+      </tr>
+      <tr>
+       <td class="folio">IRCT-RPV-2026-000398</td>
+       <td>Solicitud de inscripción registral</td>
+       <td><span class="tag t-tra">En trámite</span></td>
+       <td>06/11/2026</td>
+       <td><span class="dot d-ven"></span>Vencido</td>
+      </tr>
+     </table>
+    </div>
+
+    <div class="foot">
+     <span class="pill">1 – 15 de 1,248</span>
+     Solo se listan los expedientes de la oficina de adscripción del usuario.
+    </div>
+
+    <div class="paginacion">
+     <span>Anterior</span><span class="on">1</span><span>de 84</span><a>Siguiente</a>
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== REGISTRO ===================== -->
+<section class="shot" id="registro">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Joshua A. Alvarado Tovar</b><em>Capturista · Oficina registral de Ciudad Victoria (RPV)</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class="on"><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class="off"><i class="ic"></i>Reportes e indicadores</a>
+    <a class="off"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Operación › Registrar solicitud</div>
+    <div class="h2">Registrar solicitud</div>
+    <div class="sub">El folio se asigna al guardar. Los campos marcados con asterisco son obligatorios para el tipo documental elegido.</div>
+
+    <div class="row" style="align-items:flex-start;flex-wrap:wrap">
+
+     <div class="card pad" style="flex:1.35;min-width:420px">
+      <div class="sec-t">Datos del expediente</div>
+      <div class="row" style="margin-bottom:13px;flex-wrap:wrap">
+       <div style="flex:1;min-width:240px">
+        <label>Tipo documental *</label>
+        <div class="inp sel">Solicitud de traslado de dominio</div>
+       </div>
+       <div style="flex:1;min-width:230px">
+        <label>Oficina emisora</label>
+        <div class="inp ro">RPV · Oficina registral de Ciudad Victoria</div>
+       </div>
+      </div>
+
+      <div class="sec-t" style="margin-top:4px">Metadatos del catálogo v1.0</div>
+      <div class="row" style="flex-wrap:wrap;gap:12px">
+       <div style="flex:1;min-width:240px;margin-bottom:11px">
+        <label>Clave catastral *</label>
+        <div class="inp">01-023-014-007</div>
+       </div>
+       <div style="flex:1;min-width:240px;margin-bottom:11px">
+        <label>Folio real *</label>
+        <div class="inp">FR-118427</div>
+       </div>
+       <div style="flex:1;min-width:240px;margin-bottom:11px">
+        <label>Enajenante *</label>
+        <div class="inp">María Soledad Garza Treviño</div>
+       </div>
+       <div style="flex:1;min-width:240px;margin-bottom:11px">
+        <label>Adquirente *</label>
+        <div class="inp">Ricardo Elizondo Cantú</div>
+       </div>
+       <div style="flex:1;min-width:240px;margin-bottom:11px">
+        <label>Valor de la operación *</label>
+        <div class="inp">1285000</div>
+       </div>
+      </div>
+
+      <div class="sec-t">Documento</div>
+      <div style="border:1.5px dashed #c6c9ce;border-radius:5px;padding:15px">
+       <div style="display:flex;align-items:center;gap:11px;font-size:15px">
+        <span class="btn gh" style="height:30px;padding:0 11px;font-size:14px">Examinar…</span>
+        <span>traslado-dominio-118427.pdf</span>
+       </div>
+      </div>
+      <div class="foot" style="margin-top:9px">
+       Formatos admitidos: PDF, PDF/A, JPEG y PNG. Máximo 20 MB por archivo y 60 MB por
+       expediente. El tipo se comprueba contra la firma binaria del archivo, no contra su extensión.
+      </div>
+
+      <div class="row" style="margin-top:17px">
+       <div class="btn">Guardar y asignar folio</div>
+       <div class="btn gh">Cancelar</div>
+      </div>
+     </div>
+
+     <div style="flex:.72;min-width:290px;display:flex;flex-direction:column;gap:12px">
+      <div class="card pad">
+       <div class="sec-t">Plantilla del folio</div>
+       <div class="folio" style="font-size:18px;letter-spacing:.5px;margin-bottom:9px">IRCT-RPV-2026-NNNNNN</div>
+       <div class="dl" style="grid-template-columns:84px 1fr;font-size:14px">
+        <dt>IRCT</dt><dd>Prefijo del Instituto</dd>
+        <dt>RPV</dt><dd>Clave de la oficina emisora</dd>
+        <dt>2026</dt><dd>Año de registro</dd>
+        <dt>NNNNNN</dt><dd>Consecutivo de seis dígitos, reinicia cada año</dd>
+       </div>
+      </div>
+
+      <div class="note">
+       El consecutivo se obtiene dentro de una transacción que bloquea la fila del
+       contador de la oficina, de modo que dos registros simultáneos no puedan recibir el mismo folio.
+      </div>
+
+      <div class="card pad">
+       <div class="sec-t">Plazo aplicable</div>
+       <div style="font-size:15px;line-height:1.6">
+        Solicitud de traslado de dominio: <b>7 días hábiles</b><br>
+        <span style="color:var(--gris);font-size:14px">Vence el 1 de diciembre de 2026</span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== ACUSE ===================== -->
+<section class="shot" id="acuse">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Joshua A. Alvarado Tovar</b><em>Capturista · Oficina registral de Ciudad Victoria (RPV)</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class="on"><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class="off"><i class="ic"></i>Reportes e indicadores</a>
+    <a class="off"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Operación › Registrar solicitud › Acuse</div>
+
+    <div class="ok" style="display:flex;gap:15px;align-items:flex-start;margin-bottom:18px">
+     <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--verde);flex:0 0 26px;display:grid;place-items:center;color:var(--verde);font-weight:700;font-size:16px">&#10003;</div>
+     <div>
+      <div style="font-size:18px;font-weight:700;color:#1b5e3a">Expediente registrado</div>
+      <div style="font-size:15px;color:#2c6b48;margin-top:3px">
+       El folio quedó asignado de forma definitiva y no puede modificarse ni reutilizarse.
+      </div>
+     </div>
+    </div>
+
+    <div class="row" style="align-items:flex-start;flex-wrap:wrap">
+     <div class="card pad" style="flex:1.3;min-width:420px">
+      <div class="sec-t">Acuse de registro</div>
+      <div class="folio" style="font-size:30px;letter-spacing:1px;margin:3px 0 16px;color:var(--guinda)">IRCT-RPV-2026-000413</div>
+
+      <div class="dl">
+       <dt>Tipo documental</dt><dd>Solicitud de traslado de dominio</dd>
+       <dt>Clave catastral</dt><dd>01-023-014-007</dd>
+       <dt>Folio real</dt><dd>FR-118427</dd>
+       <dt>Enajenante</dt><dd>María Soledad Garza Treviño</dd>
+       <dt>Adquirente</dt><dd>Ricardo Elizondo Cantú</dd>
+       <dt>Valor de la operación</dt><dd>1285000</dd>
+       <dt>Oficina emisora</dt><dd>Oficina registral de Ciudad Victoria (RPV)</dd>
+       <dt>Estado</dt><dd><span class="tag t-doc">Con documento</span></dd>
+       <dt>Registró</dt><dd>Joshua A. Alvarado Tovar · 20/11/2026 09:41:58</dd>
+       <dt>Plazo de atención</dt><dd>7 días hábiles · vence el 01/12/2026</dd>
+      </div>
+
+      <div class="sec-t" style="margin-top:18px">Documento asociado</div>
+      <div class="dl">
+       <dt>Archivo</dt><dd>traslado-dominio-118427.pdf · 2.4 MB</dd>
+       <dt>Versión</dt><dd>1</dd>
+       <dt>Huella SHA-256</dt>
+       <dd class="folio" style="font-size:12px;word-break:break-all">9f2c41a7e8b05d3c6ab1f47e92d0c8513ba6e7f40d29c1b8356ae0f7d4c92b18</dd>
+      </div>
+
+      <div class="row" style="margin-top:18px;flex-wrap:wrap">
+       <div class="btn">Ver expediente</div>
+       <div class="btn sec">Historial</div>
+       <div class="btn gh">Registrar otra solicitud</div>
+      </div>
+     </div>
+
+     <div style="flex:.75;min-width:290px;display:flex;flex-direction:column;gap:12px">
+      <div class="card pad">
+       <div class="sec-t">Asiento en bitácora</div>
+       <table style="font-size:14px">
+        <tr><td style="padding:6px 0;width:86px;color:var(--gris)">09:41:58</td>
+         <td style="padding:6px 0">Alta de expediente</td></tr>
+        <tr><td style="padding:6px 0;width:86px;color:var(--gris)">09:41:58</td>
+         <td style="padding:6px 0">Asignación de folio</td></tr>
+        <tr><td style="padding:6px 0;width:86px;color:var(--gris)">09:42:03</td>
+         <td style="padding:6px 0">Carga de documento</td></tr>
+       </table>
+      </div>
+      <div class="note">
+       El acuse reproduce lo asentado en la bitácora; no es un documento independiente.
+       Cualquier cifra del control estadístico puede desglosarse hasta estos asientos.
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== VISOR ===================== -->
+<section class="shot" id="visor">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Laura M. Treviño Sáenz</b><em>Consultante · Oficina catastral de Ciudad Victoria (CAV)</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class="off"><i class="ic"></i>Registrar solicitud</a>
+    <a class="on"><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class="off"><i class="ic"></i>Reportes e indicadores</a>
+    <a class="off"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Operación › Consultar › IRCT-CAV-2026-000287</div>
+    <div style="display:flex;align-items:center;gap:13px;margin-bottom:3px;flex-wrap:wrap">
+     <div class="h2 folio" style="font-size:21px">IRCT-CAV-2026-000287</div>
+     <span class="tag t-rec">Recibido</span>
+    </div>
+    <div class="sub">
+     Avalúo catastral · Oficina registral de Ciudad Victoria · registrado el 13/11/2026 · vence el 27/11/2026
+    </div>
+
+    <div class="row" style="align-items:stretch;flex-wrap:wrap">
+
+     <div style="flex:.82;min-width:300px;display:flex;flex-direction:column;gap:11px">
+      <div class="card pad">
+       <div class="sec-t">Metadatos</div>
+       <div class="dl" style="font-size:14.5px">
+        <dt>Clave catastral</dt><dd>01-041-022-013</dd>
+        <dt>Ubicación del predio</dt><dd>Calle Hidalgo 1204, Zona Centro</dd>
+        <dt>Superficie (m²)</dt><dd>428.50</dd>
+        <dt>Perito valuador</dt><dd>Ing. Arturo Lozano Ramírez</dd>
+        <dt>Fecha del avalúo</dt><dd>12/11/2026</dd>
+       </div>
+      </div>
+
+      <div class="card pad">
+       <div class="sec-t">Historial de movimientos</div>
+       <table style="font-size:14px">
+        <tr>
+         <td style="padding:6px 0;width:102px;color:var(--gris)">13/11 10:22</td>
+         <td style="padding:6px 0">Alta y asignación de folio
+          <div style="font-size:12.5px;color:var(--gris)">Mónica Cantú Villarreal</div></td>
+        </tr>
+        <tr>
+         <td style="padding:6px 0;width:102px;color:var(--gris)">13/11 10:24</td>
+         <td style="padding:6px 0">Carga de documento
+          <div style="font-size:12.5px;color:var(--gris)">Mónica Cantú Villarreal</div></td>
+        </tr>
+        <tr>
+         <td style="padding:6px 0;width:102px;color:var(--gris)">16/11 09:05</td>
+         <td style="padding:6px 0">Sustitución de documento
+          <div style="font-size:12.5px;color:var(--gris)">Mónica Cantú Villarreal</div></td>
+        </tr>
+        <tr>
+         <td style="padding:6px 0;width:102px;color:var(--gris)">17/11 12:48</td>
+         <td style="padding:6px 0">Turnado a otra oficina → RPV
+          <div style="font-size:12.5px;color:var(--gris)">Adriana Flores Bazán</div></td>
+        </tr>
+        <tr>
+         <td style="padding:6px 0;width:102px;color:var(--gris)">18/11 08:31</td>
+         <td style="padding:6px 0">Acuse de recepción
+          <div style="font-size:12.5px;color:var(--gris)">Rodolfo Garza Montalvo</div></td>
+        </tr>
+       </table>
+      </div>
+     </div>
+
+     <div style="flex:1.18;min-width:340px;display:flex;min-height:520px">
+      <div class="vis">
+       <div class="vis-bar">
+        <span>avaluo-01-041-022-013.pdf</span>
+        <span style="opacity:.6">v2 de 2</span>
+        <span style="margin-left:auto">
+         <span style="border:1px solid #6b6f75;border-radius:3px;padding:2px 7px;font-size:12.5px;opacity:.55">Descarga no autorizada para este perfil</span>
+        </span>
+       </div>
+       <div class="vis-pg">
+        <div class="paper">
+         <h4>AVALÚO CATASTRAL<br>INSTITUTO REGISTRAL Y CATASTRAL</h4>
+         <div class="ln"></div><div class="ln m"></div><div class="ln"></div>
+         <div class="ln s"></div>
+         <div style="height:9px"></div>
+         <div class="ln"></div><div class="ln"></div><div class="ln m"></div>
+         <div class="ln"></div><div class="ln s"></div>
+         <div style="height:9px"></div>
+         <div class="ln m"></div><div class="ln"></div><div class="ln"></div>
+         <div class="ln s"></div>
+         <div style="height:9px"></div>
+         <div class="ln"></div><div class="ln m"></div><div class="ln s"></div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+
+    <div class="foot">
+     El archivo se entrega por una ruta verificada contra el rol y la oficina del usuario;
+     su dirección no es adivinable ni reutilizable.
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== CONTROL ESTADISTICO ===================== -->
+<section class="shot" id="tablero">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Edgar F. Alvarado Tovar</b><em>Directivo · Todas las oficinas</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class="off"><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class="on"><i class="ic"></i>Reportes e indicadores</a>
+    <a class="off"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Seguimiento › Reportes e indicadores</div>
+    <div class="h2">Control estadístico</div>
+    <div class="sub">Del 1 al 20 de noviembre de 2026 · 4 oficinas · derivado íntegramente de la bitácora</div>
+
+    <div class="fil">
+     <div><label>Desde</label><div class="inp" style="width:160px">01/11/2026</div></div>
+     <div><label>Hasta</label><div class="inp" style="width:160px">20/11/2026</div></div>
+     <div><label>Oficina</label><div class="inp sel" style="width:190px">Todas</div></div>
+     <div><label>Tipo documental</label><div class="inp sel" style="width:200px">Todos</div></div>
+     <div class="btn">Aplicar</div>
+     <div class="btn sec">Exportar a hoja de cálculo</div>
+     <div class="btn sec">Versión imprimible (PDF)</div>
+     <div class="btn sec">Ver desglose</div>
+    </div>
+
+    <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
+     <div class="kpi"><div class="n">1,462</div>
+      <div class="l">Expedientes registrados</div>
+      <div class="d">En el periodo seleccionado</div></div>
+     <div class="kpi"><div class="n">1,189</div>
+      <div class="l">Concluidos en plazo</div>
+      <div class="d">81.3 % del total</div></div>
+     <div class="kpi"><div class="n" style="color:var(--ambar)">142</div>
+      <div class="l">En riesgo de vencimiento</div>
+      <div class="d">80 % del plazo consumido</div></div>
+     <div class="kpi"><div class="n" style="color:var(--rojo)">131</div>
+      <div class="l">Fuera de plazo</div>
+      <div class="d">9.0 % del total</div></div>
+    </div>
+
+    <div class="row" style="flex-wrap:wrap">
+     <div class="card pad" style="flex:1.1;min-width:360px">
+      <div class="sec-t">Distribución por oficina</div>
+      <table>
+       <tr><th>Oficina</th><th style="width:80px">Total</th><th style="width:110px">En plazo</th><th style="width:160px">Días promedio</th></tr>
+       <tr>
+        <td>Catastral Victoria</td>
+        <td>401</td>
+        <td>79.6 %</td>
+        <td><div class="bar"><i style="width:91%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">5.0 días</div></td>
+       </tr>
+       <tr>
+        <td>Registral Reynosa</td>
+        <td>352</td>
+        <td>84.4 %</td>
+        <td><div class="bar"><i style="width:71%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">3.9 días</div></td>
+       </tr>
+       <tr>
+        <td>Registral Tampico</td>
+        <td>223</td>
+        <td>76.2 %</td>
+        <td><div class="bar"><i style="width:100%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">5.5 días</div></td>
+       </tr>
+       <tr>
+        <td>Registral Victoria</td>
+        <td>486</td>
+        <td>83.1 %</td>
+        <td><div class="bar"><i style="width:78%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">4.3 días</div></td>
+       </tr>
+      </table>
+     </div>
+
+     <div class="card pad" style="flex:.85;min-width:300px">
+      <div class="sec-t">Por tipo documental</div>
+      <table>
+       <tr><th>Tipo</th><th style="width:76px">Total</th><th style="width:130px">Participación</th></tr>
+       <tr>
+        <td>Certificado</td>
+        <td>512</td>
+        <td><div class="bar"><i style="width:100%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">35.0 %</div></td>
+       </tr>
+       <tr>
+        <td>Inscripción registral</td>
+        <td>389</td>
+        <td><div class="bar"><i style="width:76%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">26.6 %</div></td>
+       </tr>
+       <tr>
+        <td>Traslado de dominio</td>
+        <td>274</td>
+        <td><div class="bar"><i style="width:53%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">18.7 %</div></td>
+       </tr>
+       <tr>
+        <td>Avalúo catastral</td>
+        <td>198</td>
+        <td><div class="bar"><i style="width:39%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">13.5 %</div></td>
+       </tr>
+       <tr>
+        <td>Oficio interno</td>
+        <td>89</td>
+        <td><div class="bar"><i style="width:17%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">6.1 %</div></td>
+       </tr>
+      </table>
+     </div>
+    </div>
+
+    <div class="foot">
+     Cada cifra puede desglosarse hasta los asientos de bitácora que la componen;
+     la suma de los desgloses coincide con el total mostrado. El tablero presenta además
+     el tiempo por etapa y los registros por usuario.
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== CORTES DEL PERIODO ===================== -->
+<section class="shot" id="cortes">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Edgar F. Alvarado Tovar</b><em>Directivo · Todas las oficinas</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class="off"><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class="on"><i class="ic"></i>Reportes e indicadores</a>
+    <a class="off"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Seguimiento › Reportes e indicadores › Cortes del periodo</div>
+    <div class="h2">Cortes del periodo</div>
+    <div class="sub">Del 1 al 20 de noviembre de 2026 · 4 oficinas · derivado íntegramente de la bitácora</div>
+
+    <div class="row" style="flex-wrap:wrap">
+     <div class="card pad" style="flex:1.05;min-width:330px">
+      <div class="sec-t">Tiempo por etapa del ciclo</div>
+      <table>
+       <tr><th>Etapa</th><th style="width:110px">Expedientes</th><th style="width:140px">Días hábiles</th></tr>
+       <tr>
+        <td>Registro y carga del documento</td>
+        <td>1,462</td>
+        <td><div class="bar"><i style="width:0%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">0.0 días</div></td>
+       </tr>
+       <tr>
+        <td>Turnado a la oficina competente</td>
+        <td>1,301</td>
+        <td><div class="bar"><i style="width:19%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">0.6 días</div></td>
+       </tr>
+       <tr>
+        <td>Acuse de recepción</td>
+        <td>1,274</td>
+        <td><div class="bar"><i style="width:16%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">0.5 días</div></td>
+       </tr>
+       <tr>
+        <td>Resolución y resguardo</td>
+        <td>1,189</td>
+        <td><div class="bar"><i style="width:100%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">3.2 días</div></td>
+       </tr>
+      </table>
+      <div class="foot" style="margin-top:8px">
+       Un promedio global no dice dónde se espera. La columna de expedientes
+       advierte cuántos casos sostienen cada promedio: una media de cuatro
+       expedientes no es una medición del universo.
+      </div>
+     </div>
+
+     <div class="card pad" style="flex:.9;min-width:300px">
+      <div class="sec-t">Registros por usuario</div>
+      <table>
+       <tr><th>Usuario</th><th style="width:76px">Total</th><th style="width:120px">Participación</th></tr>
+       <tr>
+        <td>Joshua A. Alvarado Tovar</td>
+        <td>214</td>
+        <td><div class="bar"><i style="width:42%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">14.6 %</div></td>
+       </tr>
+       <tr>
+        <td>Mónica Cantú Villarreal</td>
+        <td>198</td>
+        <td><div class="bar"><i style="width:39%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">13.5 %</div></td>
+       </tr>
+       <tr>
+        <td>Rodolfo Garza Montalvo</td>
+        <td>151</td>
+        <td><div class="bar"><i style="width:30%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">10.3 %</div></td>
+       </tr>
+       <tr>
+        <td>Adriana Flores Bazán</td>
+        <td>143</td>
+        <td><div class="bar"><i style="width:28%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">9.8 %</div></td>
+       </tr>
+       <tr>
+        <td>Jorge Salinas Elizondo</td>
+        <td>132</td>
+        <td><div class="bar"><i style="width:26%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">9.0 %</div></td>
+       </tr>
+       <tr>
+        <td>Héctor Villanueva Peña</td>
+        <td>118</td>
+        <td><div class="bar"><i style="width:23%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">8.1 %</div></td>
+       </tr>
+       <tr>
+        <td>Resto del padrón (14 usuarios)</td>
+        <td>506</td>
+        <td><div class="bar"><i style="width:100%"></i></div>
+         <div style="font-size:12.5px;color:var(--gris);margin-top:3px">34.6 %</div></td>
+       </tr>
+      </table>
+      <div class="foot" style="margin-top:8px">
+       Sirve para detectar carga desbalanceada entre ventanillas, no para evaluar
+       personas: una ventanilla que concentra la mitad de los registros señala un
+       cuello de botella, no un desempeño.
+      </div>
+     </div>
+    </div>
+
+    <div class="note">
+     Las cuatro etapas son las transiciones que los movimientos asentados permiten
+     medir. No se desglosa la resolución aparte del resguardo porque el sistema no
+     registra ningún evento entre el acuse y el cierre: fijar esa frontera por
+     estimación produciría dos cifras que no corresponden a ningún hecho asentado.
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== BITACORA ===================== -->
+<section class="shot" id="bitacora">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Norma L. Cepeda Ruiz</b><em>Auditor · Todas las oficinas</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class="off"><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class=""><i class="ic"></i>Reportes e indicadores</a>
+    <a class="on"><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="off"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Seguimiento › Bitácora</div>
+    <div class="h2">Bitácora institucional</div>
+    <div class="sub">Registro inalterable de accesos y operaciones · 24,871 asientos</div>
+
+    <div class="fil">
+     <div><label>Usuario</label><div class="inp sel" style="width:200px">Todos</div></div>
+     <div><label>Acción</label><div class="inp sel" style="width:200px">Todas</div></div>
+     <div><label>Folio</label><div class="inp ph" style="width:190px">IRCT-…</div></div>
+     <div><label>Fecha</label><div class="inp ph" style="width:160px">dd/mm/aaaa</div></div>
+     <div class="btn">Filtrar</div>
+     <div class="btn gh">Limpiar</div>
+    </div>
+
+    <div class="card">
+     <table>
+      <tr>
+       <th style="width:160px">Fecha y hora</th>
+       <th style="width:200px">Usuario</th>
+       <th style="width:190px">Acción</th>
+       <th style="width:200px">Folio</th>
+       <th style="width:130px">Origen</th>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:58:14</td>
+       <td>Norma L. Cepeda Ruiz</td>
+       <td>Consulta de bitácora</td>
+       <td class="folio">—</td>
+       <td>10.21.4.88</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:57:02</td>
+       <td>Edgar F. Alvarado Tovar</td>
+       <td>Exportación de reporte</td>
+       <td class="folio">—</td>
+       <td>10.21.4.17</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:51:47</td>
+       <td>Rodolfo Garza Montalvo</td>
+       <td>Resguardo de expediente</td>
+       <td class="folio">IRCT-RPV-2026-000399</td>
+       <td>10.21.2.41</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:44:09</td>
+       <td>Laura M. Treviño Sáenz</td>
+       <td>Acceso denegado</td>
+       <td class="folio">IRCT-RPV-2026-000410</td>
+       <td>10.21.3.76</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:39:55</td>
+       <td>Rodolfo Garza Montalvo</td>
+       <td>Descarga de documento</td>
+       <td class="folio">IRCT-RPV-2026-000406</td>
+       <td>10.21.2.41</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:22:31</td>
+       <td>Joshua A. Alvarado Tovar</td>
+       <td>Carga de documento</td>
+       <td class="folio">IRCT-RPV-2026-000412</td>
+       <td>10.21.2.33</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:18:06</td>
+       <td>Joshua A. Alvarado Tovar</td>
+       <td>Asignación de folio</td>
+       <td class="folio">IRCT-RPV-2026-000412</td>
+       <td>10.21.2.33</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 13:18:06</td>
+       <td>Joshua A. Alvarado Tovar</td>
+       <td>Alta de expediente</td>
+       <td class="folio">IRCT-RPV-2026-000412</td>
+       <td>10.21.2.33</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 12:54:40</td>
+       <td>Mónica Cantú Villarreal</td>
+       <td>Sustitución de documento</td>
+       <td class="folio">IRCT-CAV-2026-000287</td>
+       <td>10.24.1.19</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 12:41:12</td>
+       <td>Héctor Villanueva Peña</td>
+       <td>Acuse de recepción</td>
+       <td class="folio">IRCT-RPR-2026-000158</td>
+       <td>10.28.1.33</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 12:30:58</td>
+       <td>Jorge Salinas Elizondo</td>
+       <td>Turnado de expediente</td>
+       <td class="folio">IRCT-RPR-2026-000158</td>
+       <td>10.26.1.52</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 11:58:23</td>
+       <td>Rodolfo Garza Montalvo</td>
+       <td>Cancelación de expediente</td>
+       <td class="folio">IRCT-RPV-2026-000407</td>
+       <td>10.21.2.41</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 11:40:07</td>
+       <td>Laura M. Treviño Sáenz</td>
+       <td>Consulta de documento</td>
+       <td class="folio">IRCT-CAV-2026-000287</td>
+       <td>10.21.3.76</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 11:22:45</td>
+       <td>Laura M. Treviño Sáenz</td>
+       <td>Consulta de expediente</td>
+       <td class="folio">IRCT-CAV-2026-000287</td>
+       <td>10.21.3.76</td>
+      </tr>
+      <tr>
+       <td>20/11/2026 11:04:19</td>
+       <td>Laura M. Treviño Sáenz</td>
+       <td>Inicio de sesión</td>
+       <td class="folio">—</td>
+       <td>10.21.3.76</td>
+      </tr>
+     </table>
+    </div>
+
+    <div class="paginacion">
+     <span>Anterior</span><span class="on">1</span><span>de 1659</span><a>Siguiente</a>
+    </div>
+
+    <div class="note" style="margin-top:14px">
+     Los privilegios de actualización y borrado están revocados sobre esta tabla en el
+     gestor de base de datos. Ningún perfil del sistema, incluido el administrador, puede
+     modificar o eliminar un asiento.
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== ADMINISTRACION DE USUARIOS ===================== -->
+<section class="shot" id="usuarios">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Administrador del Sistema</b><em>Administrador · Todas las oficinas</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class=""><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class=""><i class="ic"></i>Reportes e indicadores</a>
+    <a class=""><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="on"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Sistema › Administración › Usuarios</div>
+    <div class="h2">Usuarios</div>
+    <div class="sub">
+     11 cuentas en el padrón. La baja es lógica: conserva los asientos de
+     bitácora que la persona generó mientras estuvo activa.
+    </div>
+
+    <div class="fil">
+     <div><label>Buscar</label><div class="inp ph" style="width:230px">nombre, usuario o correo</div></div>
+     <div><label>Perfil</label><div class="inp sel" style="width:180px">Todos</div></div>
+     <div><label>Estado</label><div class="inp sel" style="width:150px">Todos</div></div>
+     <div class="btn">Buscar</div>
+     <div class="btn gh">Limpiar</div>
+    </div>
+
+    <div class="card">
+     <table>
+      <tr>
+       <th>Nombre</th>
+       <th style="width:130px">Usuario</th>
+       <th style="width:175px">Perfil</th>
+       <th style="width:155px">Ámbito</th>
+       <th style="width:105px">Estado</th>
+       <th style="width:215px">Acciones</th>
+      </tr>
+      <tr>
+       <td>Adriana Flores Bazán<div style="font-size:12.5px;color:var(--gris)">aflores@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">aflores</td>
+       <td>Responsable de oficina</td>
+       <td>Catastral Victoria</td>
+       <td><span class="tag t-res">Activo</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+      <tr>
+       <td>Administrador del Sistema<div style="font-size:12.5px;color:var(--gris)">admin@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">admin</td>
+       <td>Administrador</td>
+       <td>Toda la institución</td>
+       <td><span class="tag t-res">Activo</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+      <tr>
+       <td>Edgar F. Alvarado Tovar<div style="font-size:12.5px;color:var(--gris)">ealvarado@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">ealvarado</td>
+       <td>Directivo</td>
+       <td>Toda la institución</td>
+       <td><span class="tag t-res">Activo</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+      <tr>
+       <td>Héctor Villanueva Peña<div style="font-size:12.5px;color:var(--gris)">hvillanueva@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">hvillanueva</td>
+       <td>Responsable de oficina</td>
+       <td>Registral Tampico</td>
+       <td><span class="tag t-res">Activo</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+      <tr>
+       <td>Jorge Salinas Elizondo<div style="font-size:12.5px;color:var(--gris)">jsalinas@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">jsalinas</td>
+       <td>Responsable de oficina</td>
+       <td>Registral Reynosa</td>
+       <td><span class="tag t-res">Activo</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+      <tr>
+       <td>Joshua A. Alvarado Tovar<div style="font-size:12.5px;color:var(--gris)">jalvarado@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">jalvarado</td>
+       <td>Capturista</td>
+       <td>Registral Victoria</td>
+       <td><span class="tag t-res">Activo</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+      <tr>
+       <td>Laura M. Treviño Sáenz<div style="font-size:12.5px;color:var(--gris)">ltrevino@irct.tamaulipas.gob.mx</div></td>
+       <td class="folio">ltrevino</td>
+       <td>Consultante</td>
+       <td>Catastral Victoria</td>
+       <td><span class="tag t-tra">Bloqueado</span></td>
+       <td><span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Editar</span> <span class="btn sec" style="height:28px;padding:0 9px;font-size:13px">Desbloquear</span> <span class="btn gh" style="height:28px;padding:0 9px;font-size:13px">Dar de baja</span></td>
+      </tr>
+     </table>
+    </div>
+
+    <div class="note" style="margin-top:13px">
+     Cada operación de este módulo deja asiento en la bitácora con el detalle de lo
+     que cambió. Un administrador no puede darse de baja a sí mismo, y la clave de una
+     oficina no se modifica una vez que emitió folios.
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+<!-- ===================== CATALOGO DE TIPOS DOCUMENTALES ===================== -->
+<section class="shot" id="catalogo">
+ <div class="lienzo">
+  <div class="screen">
+  <div class="top">
+    <div class="mark">IRCT</div>
+    <h1>Sistema de Trazabilidad Documental<span>Instituto Registral y Catastral del Estado de Tamaulipas</span></h1>
+    <div class="user"><b>Administrador del Sistema</b><em>Administrador · Todas las oficinas</em></div>
+    <div class="btn sec" style="margin-left:14px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Salir</div>
+  </div>
+  <div class="body">
+  <nav class="side">
+    <div class="grp">Operación</div>
+    <a class=""><i class="ic"></i>Bandeja de expedientes</a>
+    <a class=""><i class="ic"></i>Registrar solicitud</a>
+    <a class=""><i class="ic"></i>Consultar</a>
+    <div class="grp">Seguimiento</div>
+    <a class=""><i class="ic"></i>Reportes e indicadores</a>
+    <a class=""><i class="ic"></i>Bitácora</a>
+    <div class="grp">Sistema</div>
+    <a class="on"><i class="ic"></i>Administración</a>
+  </nav>
+   <div class="main">
+    <div class="crumb">Sistema › Administración › Tipos documentales › traslado_dominio</div>
+    <div class="h2">Editar Solicitud de traslado de dominio</div>
+    <div class="sub">
+     Versión actual del catálogo: 1.0. Si cambia el plazo o los metadatos, la
+     versión subirá y los expedientes ya registrados conservarán la suya.
+    </div>
+
+    <div class="card pad" style="margin-bottom:12px">
+     <div class="sec-t">Datos del tipo</div>
+     <div class="row" style="flex-wrap:wrap;gap:12px">
+      <div style="width:210px"><label>Clave *</label><div class="inp ro folio">traslado_dominio</div></div>
+      <div style="flex:1;min-width:270px"><label>Nombre oficial *</label><div class="inp">Solicitud de traslado de dominio</div></div>
+      <div style="width:210px"><label>Nombre breve *</label><div class="inp">Traslado de dominio</div></div>
+      <div style="width:170px"><label>Plazo en días hábiles *</label><div class="inp">7</div></div>
+      <div style="width:230px"><label>En el catálogo</label>
+       <div class="inp" style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:17px">☑</span>
+        <span style="font-size:14px">Disponible para registrar</span>
+       </div>
+      </div>
+     </div>
+    </div>
+
+    <div class="card pad">
+     <div class="sec-t">Metadatos del tipo</div>
+     <div class="foot" style="margin-bottom:10px">
+      El nombre interno se usa en la base de datos y no debe cambiarse una vez que
+      hay valores capturados; la etiqueta es lo que lee el usuario en el formulario.
+      Un renglón que se deje con el nombre interno vacío se ignora.
+     </div>
+     <table>
+      <tr>
+       <th style="width:58px">Orden</th>
+       <th style="width:215px">Nombre interno</th>
+       <th>Etiqueta para el usuario</th>
+       <th style="width:140px">Tipo de dato</th>
+       <th style="width:110px">Obligatorio</th>
+      </tr>
+       <tr>
+        <td style="color:var(--gris)">1</td>
+        <td><div class="inp folio">clave_catastral</div></td>
+        <td><div class="inp">Clave catastral</div></td>
+        <td><div class="inp sel">texto</div></td>
+        <td style="font-size:17px;padding-left:14px">☑</td>
+       </tr>
+       <tr>
+        <td style="color:var(--gris)">2</td>
+        <td><div class="inp folio">folio_real</div></td>
+        <td><div class="inp">Folio real</div></td>
+        <td><div class="inp sel">texto</div></td>
+        <td style="font-size:17px;padding-left:14px">☑</td>
+       </tr>
+       <tr>
+        <td style="color:var(--gris)">3</td>
+        <td><div class="inp folio">enajenante</div></td>
+        <td><div class="inp">Enajenante</div></td>
+        <td><div class="inp sel">texto</div></td>
+        <td style="font-size:17px;padding-left:14px">☑</td>
+       </tr>
+       <tr>
+        <td style="color:var(--gris)">4</td>
+        <td><div class="inp folio">adquirente</div></td>
+        <td><div class="inp">Adquirente</div></td>
+        <td><div class="inp sel">texto</div></td>
+        <td style="font-size:17px;padding-left:14px">☑</td>
+       </tr>
+       <tr>
+        <td style="color:var(--gris)">5</td>
+        <td><div class="inp folio">valor_operacion</div></td>
+        <td><div class="inp">Valor de la operación</div></td>
+        <td><div class="inp sel">moneda</div></td>
+        <td style="font-size:17px;padding-left:14px">☑</td>
+       </tr>
+       <tr>
+        <td style="color:var(--gris)">6</td>
+        <td><div class="inp ph folio">clave_catastral</div></td>
+        <td><div class="inp ph">Clave catastral</div></td>
+        <td><div class="inp sel">texto</div></td>
+        <td style="font-size:17px;padding-left:14px">☐</td>
+       </tr>
+       <tr>
+        <td style="color:var(--gris)">7</td>
+        <td><div class="inp ph folio">clave_catastral</div></td>
+        <td><div class="inp ph">Clave catastral</div></td>
+        <td><div class="inp sel">texto</div></td>
+        <td style="font-size:17px;padding-left:14px">☐</td>
+       </tr>
+     </table>
+    </div>
+
+    <div class="row" style="margin-top:14px;flex-wrap:wrap">
+     <div class="btn">Guardar cambios</div>
+     <div class="btn gh">Cancelar</div>
+    </div>
+
+    <div class="note" style="margin-top:13px">
+     Agregar un metadato obligatorio o cambiar el plazo es aquí una operación de
+     configuración y no un cambio de código: el formulario de registro, las reglas de
+     validación, los mensajes de error y el cómputo del plazo se derivan de este
+     catálogo y aparecen solos.
+    </div>
+   </div>
+  </div>
+  </div>
+ </div>
+</section>
+</body>
+</html>

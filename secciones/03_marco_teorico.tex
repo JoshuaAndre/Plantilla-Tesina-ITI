@@ -32,8 +32,6 @@ citar; temas que luego no se usan en el desarrollo.
 propuesta.
 \end{guia}
 
-% >>> REVISIÓN 2: ESCRIBE AQUÍ el marco teórico (introducción breve y una \subsection por tema) <<<
-
 El presente capítulo reúne los conceptos, normas y tecnologías que sustentan las decisiones tomadas a lo largo del proyecto. Su propósito es doble. Por una parte, establece el vocabulario común que permite comprender en qué consiste la trazabilidad documental y por qué su ausencia, y no la falta de digitalización, constituye el problema que el sistema viene a resolver. Por otra, documenta los fundamentos técnicos sobre los que se construye la solución: el modelo de calidad con el que se clasifican los requerimientos, los principios de diseño de bases de datos que hacen posible generar un folio único bajo concurrencia, los mecanismos de control de acceso que combinan rol y unidad administrativa, y las prácticas de virtualización que permiten un despliegue reproducible.
 
 El capítulo no pretende ser un compendio exhaustivo de cada disciplina que toca, sino el conjunto mínimo y suficiente para que un lector con formación en tecnologías de la información pueda seguir el razonamiento del documento y evaluar si las decisiones adoptadas son las adecuadas. Los temas se presentan en el orden en que se emplean a lo largo del trabajo, de modo que cada concepto quede explicado antes de ser utilizado.
@@ -183,7 +181,11 @@ La seguridad de la información se articula en torno a tres propiedades: la \emp
 
 Conviene distinguir dos conceptos que suelen confundirse. La \emph{autenticación} verifica quién es el usuario; la \emph{autorización} determina qué le está permitido hacer una vez identificado. El control de acceso basado en roles agrupa los permisos en roles y asigna roles a los usuarios, lo que simplifica la administración.
 
+El modelo de \emph{control de acceso basado en roles} (RBAC) fue formalizado por Sandhu y colaboradores \cite{sandhu1996rbac} y posteriormente normalizado en la propuesta de estándar del NIST \cite{ferraiolo2001nist}. Su idea central es interponer el rol entre el usuario y el permiso: los permisos se asignan a roles y los usuarios adquieren roles, de modo que administrar el acceso de una persona se reduce a administrar su pertenencia a roles. El modelo se organiza en cuatro componentes de sofisticación creciente, de los cuales el segundo, RBAC jerárquico, introduce la herencia entre roles, y el tercero, RBAC con restricciones, permite condicionar la activación de un rol. El modelo de \emph{control de acceso basado en atributos} (ABAC), descrito en la publicación especial 800-162 del NIST \cite{hu2014abac}, sigue una vía distinta: la decisión de acceso se calcula evaluando políticas sobre atributos del sujeto, del objeto y del entorno, lo que ofrece una expresividad mucho mayor a cambio de una complejidad administrativa y de depuración considerablemente superior.
+
 Sin embargo, el control basado únicamente en roles resulta insuficiente para el problema que se atiende. Un capturista de una oficina y un capturista de otra tienen el mismo rol y, por tanto, los mismos permisos, pero no deben operar sobre la misma documentación. El sistema propuesto extiende el modelo incorporando un \emph{ámbito de datos} determinado por la unidad administrativa de adscripción, de modo que el permiso efectivo resulta de la intersección entre lo que el rol autoriza y la documentación sobre la que el usuario puede ejercerlo.
+
+Conviene precisar en qué consiste y en qué no consiste esta extensión, para no presentarla como una aportación mayor de la que es. No se trata de un modelo nuevo: la literatura contempla desde hace tiempo la necesidad de acotar el alcance de un rol, y el propio RBAC con restricciones \cite{ferraiolo2001nist} admite condicionar su activación. La diferencia con el modelo normalizado está en que la restricción no se aplica sobre la activación del rol, que permanece constante durante toda la sesión, sino sobre el conjunto de objetos alcanzables en cada operación, mediante un predicado fijo —la igualdad entre la oficina del expediente y la de adscripción del usuario— que el sistema añade a toda consulta y verifica antes de cada acción. Frente a ABAC \cite{hu2014abac}, que resolvería el mismo problema con una política general sobre atributos, la extensión aquí adoptada renuncia deliberadamente a esa generalidad: emplea un único atributo, con una única regla, no administrable por el usuario y evaluada en el servidor. La razón es la expuesta al tratar la arquitectura, y es de mantenibilidad: una política ABAC exige un motor de decisión y un lenguaje de reglas que el área técnica del Instituto tendría que operar después de la estadía, mientras que un predicado fijo sobre un atributo se comprende leyendo una línea de código y no puede configurarse mal. La extensión es, entonces, un caso particular y simplificado de lo que ABAC permite expresar, elegido por su costo de operación y no por su potencia.
 
 \subsubsection{Almacenamiento de contraseñas y funciones hash}
 
@@ -227,8 +229,6 @@ o dos oraciones: ¿qué es y por qué lo necesito?
 
 \textbf{Cómo se revisa:} que los temas cubran lo necesario para el proyecto y no incluyan relleno.
 \end{guia}
-
-% >>> REVISIÓN 1: ESCRIBE AQUÍ la lista de temas tentativos <<<
 
 Se conserva aquí la relación de los temas que sustentan el proyecto, presentada en la primera revisión y desarrollada en las subsecciones anteriores; sirve ahora como mapa de lectura del capítulo.
 

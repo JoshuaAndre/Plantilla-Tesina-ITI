@@ -1,0 +1,78 @@
+\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc}
+
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\scriptsize, x=1cm, y=1cm,
+  obj/.style={rectangle, draw=black!55, fill=white, rounded corners=1.5pt,
+              align=center, text width=29mm, minimum height=8mm, inner sep=2.5pt},
+  vida/.style={draw=black!35, dashed},
+  act/.style={rectangle, draw=black!55, fill=black!8, minimum width=2.6mm, inner sep=0pt},
+  msg/.style={-{Latex[length=1.8mm]}, draw=black!65},
+  ret/.style={-{Latex[length=1.6mm]}, draw=black!45, dashed},
+  et/.style={font=\tiny, text=black!70, inner sep=1.5pt, align=center, fill=white}
+]
+
+\def\yT{-1.0}   % inicio de las lineas de vida
+\def\yB{-10.9}  % fin
+
+% ---------------- objetos participantes ----------------
+\foreach \x/\n/\t in {%
+  0/cap/{Capturista},
+  3.9/ctl/{Controlador\\de solicitudes},
+  7.8/fol/{Servicio de folio},
+  11.7/alm/{Servicio de\\almacenamiento},
+  15.6/bit/{Servicio de bitácora},
+  19.5/bd/{Base de datos}}{
+  \node[obj] at (\x,-0.35) (\n) {\t};
+  \draw[vida] (\x,\yT) -- (\x,\yB);
+}
+
+% ---------------- barras de activacion ----------------
+\draw[act] (3.9,-1.25) rectangle ++(0.26,-8.85);
+\draw[act] (7.8,-2.55) rectangle ++(0.26,-2.65);
+\draw[act] (11.7,-5.6) rectangle ++(0.26,-1.45);
+\draw[act] (15.6,-8.6) rectangle ++(0.26,-0.85);
+
+% ---------------- mensajes ----------------
+\draw[msg] (0,-1.25) -- node[et,above]{1. enviar solicitud: tipo documental,\\metadatos y archivo} (3.87,-1.25);
+
+\draw[msg] (4.16,-1.85) -- ++(1.0,0) -- ++(0,-0.35)
+  node[et,right=1pt,pos=0.55]{2. validar metadatos\\contra el catálogo} -- (4.16,-2.20);
+
+\draw[msg] (4.16,-2.85) -- node[et,above]{3. solicitar folio (oficina, año)} (7.77,-2.85);
+\draw[msg] (8.06,-3.35) -- node[et,above]{4. abrir transacción y bloquear la fila del contador} (19.47,-3.35);
+\draw[ret] (19.47,-3.80) -- node[et,above]{5. consecutivo vigente} (8.06,-3.80);
+\draw[msg] (8.06,-4.25) -- node[et,above]{6. incrementar el contador e insertar el expediente} (19.47,-4.25);
+\draw[ret] (19.47,-4.70) -- node[et,above]{7. confirmar la transacción} (8.06,-4.70);
+\draw[ret] (7.77,-5.15) -- node[et,above]{8. folio asignado \texttt{IRCT-RPV-2026-000123}} (4.16,-5.15);
+
+\draw[msg] (4.16,-5.60) -- node[et,above]{9. guardar el archivo} (11.67,-5.60);
+\draw[msg] (11.96,-6.20) -- ++(1.0,0) -- ++(0,-0.35)
+  node[et,right=1pt,pos=0.55]{10. calcular SHA-256\\y nombre opaco} -- (11.96,-6.55);
+\draw[ret] (11.67,-7.05) -- node[et,above]{11. referencia del archivo} (4.16,-7.05);
+
+\draw[msg] (4.16,-7.60) -- node[et,above]{12. insertar el registro del documento} (19.47,-7.60);
+\draw[ret] (19.47,-8.05) -- node[et,above]{13. confirmación} (4.16,-8.05);
+
+\draw[msg] (4.16,-8.60) -- node[et,above]{14. asentar: alta de expediente, usuario, fecha y folio} (15.57,-8.60);
+\draw[msg] (15.86,-9.10) -- node[et,above]{15. insertar el asiento} (19.47,-9.10);
+
+\draw[ret] (3.87,-10.10) -- node[et,above]{16. acuse con el folio asignado} (0,-10.10);
+
+% ---------------- nota sobre la atomicidad ----------------
+\node[draw=black!45, dashed, rounded corners=2pt, fill=white, align=left,
+      text width=62mm, font=\tiny\itshape, inner sep=3.5pt] at (12.8,-10.45)
+      {Los mensajes 4 a 7 ocurren dentro de una sola transacción: el bloqueo de la fila del
+       contador impide que dos registros simultáneos obtengan el mismo consecutivo. Si
+       cualquiera de ellos falla, la transacción se revierte y no se consume folio.};
+
+\end{tikzpicture}
+\end{document}

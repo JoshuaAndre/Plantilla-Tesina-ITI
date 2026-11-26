@@ -1,0 +1,91 @@
+\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
+
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\scriptsize,
+  tabla/.style={rectangle, draw=black!55, fill=white, rounded corners=1.5pt,
+                align=left, text width=42mm, inner sep=3pt, anchor=north west},
+  rel/.style={-{Latex[length=1.8mm]}, draw=black!55},
+  card/.style={font=\tiny, text=black!60, inner sep=1.5pt, fill=white}
+]
+
+\def\T#1{{\bfseries #1}\\[1.5pt]}
+\def\FK#1#2{\textit{#1} $\rightarrow$ #2}
+
+% ===================== catalogos =====================
+\node[tabla] (oficinas) at (0,0)
+  {\T{oficinas}\underline{id}\\ clave (3) · única\\ nombre\\ activa};
+
+\node[tabla] (roles) at (0,-2.3)
+  {\T{roles}\underline{id}\\ clave · única\\ nombre};
+
+\node[tabla] (usuarios) at (0,-4.3)
+  {\T{usuarios}\underline{id}\\ \FK{rol\_id}{roles}\\ \FK{oficina\_id}{oficinas}\\
+   nombre\\ correo · único\\ hash\_contrasena\\ activo};
+
+\node[tabla] (tipos) at (0,-8.1)
+  {\T{tipos\_documentales}\underline{id}\\ clave · única\\ nombre\\ plazo\_dias\\ version};
+
+\node[tabla] (campos) at (0,-10.8)
+  {\T{campos\_metadato}\underline{id}\\ \FK{tipo\_id}{tipos\_documentales}\\
+   nombre\_campo\\ tipo\_dato\\ obligatorio};
+
+% ===================== nucleo documental =====================
+\node[tabla] (contadores) at (6.4,0)
+  {\T{contadores\_folio}\underline{\FK{oficina\_id}{oficinas}}\\ \underline{anio}\\ consecutivo};
+
+\node[tabla] (expedientes) at (6.4,-2.3)
+  {\T{expedientes}\underline{id}\\ folio · único\\ \FK{tipo\_id}{tipos\_documentales}\\
+   \FK{oficina\_origen\_id}{oficinas}\\ \FK{oficina\_actual\_id}{oficinas}\\
+   estado\\ \FK{creado\_por}{usuarios}\\ creado\_en};
+
+\node[tabla] (valores) at (6.4,-6.8)
+  {\T{valores\_metadato}\underline{id}\\ \FK{expediente\_id}{expedientes}\\
+   \FK{campo\_id}{campos\_metadato}\\ valor};
+
+\node[tabla] (documentos) at (6.4,-9.4)
+  {\T{documentos}\underline{id}\\ \FK{expediente\_id}{expedientes}\\ version\\
+   nombre\_opaco · único\\ sha256\\ mime\\ bytes\\
+   \FK{cargado\_por}{usuarios}\\ cargado\_en\\ motivo\_cambio};
+
+% ===================== trazabilidad =====================
+\node[tabla] (movimientos) at (12.8,-2.3)
+  {\T{movimientos}\underline{id}\\ \FK{expediente\_id}{expedientes}\\ tipo\\
+   \FK{oficina\_origen\_id}{oficinas}\\ \FK{oficina\_destino\_id}{oficinas}\\
+   \FK{usuario\_id}{usuarios}\\ fecha};
+
+\node[tabla] (bitacora) at (12.8,-6.8)
+  {\T{bitacora}\underline{id}\\ \FK{usuario\_id}{usuarios}\\ accion\\
+   \FK{expediente\_id}{expedientes}\\ folio\\ direccion\_origen\\ fecha\\[2pt]
+   \itshape privilegios de actualización\\ \itshape y borrado revocados};
+
+% ===================== relaciones =====================
+\draw[rel] (roles.east)    -- node[card]{1:N} ([yshift=-8mm]usuarios.north east);
+\draw[rel] (oficinas.east) -- node[card]{1:N} ([yshift=-8mm]contadores.north west);
+\draw[rel] (tipos.east)    -- node[card]{1:N} ([yshift=-8mm]campos.north east);
+\draw[rel] ([yshift=-5mm]tipos.north east) -- node[card,pos=0.7]{1:N} ([yshift=-20mm]expedientes.north west);
+\draw[rel] ([xshift=10mm]expedientes.south west) -- node[card]{1:N} ([xshift=10mm]valores.north west);
+\draw[rel] ([xshift=10mm]valores.south west) -- node[card]{1:N} ([xshift=10mm]documentos.north west);
+\draw[rel] ([yshift=-14mm]expedientes.north east) -- node[card]{1:N} ([yshift=-14mm]movimientos.north west);
+\draw[rel] ([yshift=-26mm]expedientes.north east) -- node[card,pos=0.62]{1:N} ([yshift=-10mm]bitacora.north west);
+\draw[rel] (campos.east) -- node[card,pos=0.78]{1:N} ([yshift=-14mm]valores.north west);
+
+\begin{scope}[on background layer]
+  \node[draw=black!25, dashed, rounded corners=2pt, inner sep=4mm, fit=(oficinas)(campos),
+        label={[anchor=south west, font=\scriptsize\itshape, text=black!55]north west:Catálogos}] {};
+  \node[draw=black!25, dashed, rounded corners=2pt, inner sep=4mm, fit=(contadores)(documentos),
+        label={[anchor=south west, font=\scriptsize\itshape, text=black!55]north west:Núcleo documental}] {};
+  \node[draw=black!25, dashed, rounded corners=2pt, inner sep=4mm, fit=(movimientos)(bitacora),
+        label={[anchor=south west, font=\scriptsize\itshape, text=black!55]north west:Trazabilidad}] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{document}

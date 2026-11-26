@@ -1,0 +1,84 @@
+\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc,shapes.geometric}
+
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+% --- figura de actor UML ---
+\tikzset{
+  actorpic/.pic={
+    \draw[black!65] (0,0) circle (2.1mm);
+    \draw[black!65] (0,-2.1mm) -- (0,-7.5mm);
+    \draw[black!65] (-3mm,-4.0mm) -- (3mm,-4.0mm);
+    \draw[black!65] (0,-7.5mm) -- (-2.6mm,-12mm);
+    \draw[black!65] (0,-7.5mm) -- (2.6mm,-12mm);
+  }
+}
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\small,
+  uc/.style={ellipse, draw=black!55, fill=white, align=center,
+             minimum width=40mm, minimum height=10mm, inner sep=1.5pt, font=\scriptsize},
+  lnk/.style={draw=black!50},
+  ext/.style={-{Latex[length=1.8mm]}, draw=black!45, dashed}
+]
+
+% ---------- casos de uso ----------
+\node[uc] (u1) {Iniciar sesión};
+\node[font=\tiny\itshape, text=black!55, below=1.2mm of u1]
+  (nota) {Todos los demás casos de uso lo incluyen};
+
+\node[uc, below=5mm of nota]  (u2)  {Registrar solicitud\\y obtener folio};
+\node[uc, below=8mm of u2]    (u3)  {Cargar documento\\y sus metadatos};
+\node[uc, below=8mm of u3]    (u4)  {Turnar expediente\\a otra oficina};
+\node[uc, below=8mm of u4]    (u5)  {Registrar acuse\\de recepción};
+\node[uc, below=8mm of u5]    (u6)  {Resguardar o cancelar\\expediente};
+\node[uc, below=8mm of u6]    (u7)  {Consultar expediente};
+\node[uc, below=8mm of u7]    (u8)  {Visualizar documento\\en el visor};
+\node[uc, below=8mm of u8]    (u9)  {Consultar bitácora};
+\node[uc, below=8mm of u9]    (u10) {Generar reportes\\e indicadores};
+\node[uc, below=8mm of u10]   (u11) {Administrar usuarios,\\roles y catálogos};
+
+% ---------- frontera del sistema ----------
+\begin{scope}[on background layer]
+  \node[draw=black!45, rounded corners=2pt, inner xsep=7mm, inner ysep=7mm,
+        fit=(u1)(u11),
+        label={[anchor=north, font=\scriptsize\itshape, text=black!55, yshift=-1.8mm]north:
+        Sistema de trazabilidad documental}] (sis) {};
+\end{scope}
+
+% ---------- actores a la izquierda ----------
+\coordinate (ca1) at ([xshift=-40mm]$(u2)!0.5!(u3)$);
+\coordinate (ca2) at ([xshift=-40mm]$(u5)$);
+\coordinate (ca3) at ([xshift=-40mm]$(u7)!0.5!(u8)$);
+\foreach \c/\n/\t in {ca1/A1/{Capturista}, ca2/A2/{Responsable\\de oficina}, ca3/A3/{Consultante}}{
+  \pic at (\c) {actorpic};
+  \node[font=\scriptsize, align=center, text width=25mm] at ([yshift=-17.5mm]\c) {\t};
+}
+
+% ---------- actores a la derecha ----------
+\coordinate (cb1) at ([xshift=40mm]$(u9)$);
+\coordinate (cb2) at ([xshift=40mm]$(u10)$);
+\coordinate (cb3) at ([xshift=40mm]$(u11)$);
+\foreach \c/\t in {cb1/{Auditor}, cb2/{Directivo}, cb3/{Administrador\\del sistema}}{
+  \pic at (\c) {actorpic};
+  \node[font=\scriptsize, align=center, text width=25mm] at ([yshift=-17.5mm]\c) {\t};
+}
+
+% ---------- asociaciones ----------
+\foreach \c/\u in {ca1/u2, ca1/u3, ca2/u4, ca2/u5, ca2/u6, ca3/u7, ca3/u8}
+  \draw[lnk] ([yshift=-5mm]\c) -- (\u.west);
+\foreach \c/\u in {cb1/u9, cb2/u10, cb3/u11}
+  \draw[lnk] ([yshift=-5mm]\c) -- (\u.east);
+
+% ---------- extension del visor ----------
+\draw[ext] (u8.east) to[out=25,in=-25]
+  node[midway, right=1.5pt, font=\tiny\itshape, text=black!55]{$\ll$extend$\gg$} (u7.east);
+
+\end{tikzpicture}
+\end{document}

@@ -35,8 +35,6 @@ rápido''); propuesta desconectada de los objetivos; cronograma sin fechas.
 \textbf{Cómo se revisa:} coherencia con el problema y los objetivos, viabilidad en un cuatrimestre y claridad técnica.
 \end{guia}
 
-% >>> ESCRIBE AQUÍ la propuesta de solución (con una \subsection por apartado) <<<
-
 \subsection{Descripción general de la solución}
 
 La solución consiste en un sistema web institucional, de uso interno, que sustituye el circuito en papel por un flujo digital en el que cada documento recibe un identificador único al nacer y conserva, desde ese momento y hasta su resguardo, la constancia de todos los movimientos de que fue objeto. No se trata de digitalizar el formato de solicitud, sino de trasladar al sistema el control del proceso: el documento existe para la institución únicamente cuando ha sido registrado, y cada cambio de situación queda asentado por el propio sistema sin depender de que alguien recuerde anotarlo.
@@ -77,9 +75,9 @@ Los que aquí se enuncian son los que definen la solución y delimitan su alcanc
 
   \item[M2. Solicitud y carga de documentos]\leavevmode
   \begin{itemize}[nosep,leftmargin=1.4em,topsep=1pt]
-    \item \textbf{RF-04.} El sistema asigna a cada solicitud un folio institucional único con la forma \texttt{IRCT-\textless oficina\textgreater-\textless año\textgreater-\textless consecutivo\textgreater}, irrepetible aun ante registros simultáneos.
-    \item \textbf{RF-05.} El sistema exige los metadatos obligatorios que correspondan al tipo documental seleccionado y rechaza el registro incompleto.
-    \item \textbf{RF-06.} El sistema admite archivos en los formatos y tamaños autorizados, calcula su huella criptográfica y los almacena fuera de la raíz pública con nombre opaco.
+    \item \textbf{RF-04.} El sistema asigna a cada solicitud un folio institucional único con la plantilla \texttt{IRCT-OOO-AAAA-NNNNNN}, donde \texttt{IRCT} es el prefijo fijo del Instituto, \texttt{OOO} la clave de tres caracteres de la oficina emisora tomada del catálogo de oficinas, \texttt{AAAA} el año de registro en cuatro dígitos y \texttt{NNNNNN} un consecutivo de seis dígitos con ceros a la izquierda que reinicia en \texttt{000001} cada primero de enero y es independiente por oficina. El folio de ejemplo \texttt{IRCT-RPV-2026-000123} corresponde al registro número ciento veintitrés del año 2026 en la oficina registral de Ciudad Victoria. El folio es irrepetible aun ante registros simultáneos y, una vez asignado, no se reutiliza ni se modifica.
+    \item \textbf{RF-05.} El sistema exige los metadatos obligatorios que el catálogo de tipos documentales define para el tipo seleccionado, conforme a la Tabla~\ref{tab:catalogo_tipos}, y rechaza el registro mientras falte alguno.
+    \item \textbf{RF-06.} El sistema admite únicamente archivos PDF, PDF/A, JPEG y PNG de hasta 20~MB por archivo y 60~MB por expediente, rechaza cualquier otro tipo comprobando la firma binaria del archivo y no solo su extensión, calcula su huella SHA-256 y lo almacena fuera de la raíz pública con nombre opaco.
     \item \textbf{RF-07.} El sistema conserva las versiones anteriores de un documento sustituido junto con el motivo del cambio, sin eliminar el antecedente.
     \item \textbf{RF-08.} El sistema permite turnar un expediente a otra oficina y registrar el acuse de recepción por parte de la oficina destino.
   \end{itemize}
@@ -94,7 +92,7 @@ Los que aquí se enuncian son los que definen la solución y delimitan su alcanc
   \item[M4. Control estadístico]\leavevmode
   \begin{itemize}[nosep,leftmargin=1.4em,topsep=1pt]
     \item \textbf{RF-12.} El sistema calcula, a partir de la bitácora, el volumen documental y su distribución por usuario, oficina, tipo documental y periodo, así como el tiempo transcurrido entre etapas.
-    \item \textbf{RF-13.} El sistema identifica los expedientes que exceden el plazo definido para su etapa actual.
+    \item \textbf{RF-13.} El sistema identifica los expedientes que exceden el plazo de su etapa actual, conforme a los plazos de la Tabla~\ref{tab:catalogo_tipos}, y los distingue en dos niveles: en riesgo cuando han consumido el ochenta por ciento del plazo y vencidos cuando lo han superado.
     \item \textbf{RF-14.} El sistema exporta los reportes en formato de hoja de cálculo y en PDF, indicando el periodo y los filtros aplicados.
   \end{itemize}
 
@@ -111,6 +109,59 @@ Los que aquí se enuncian son los que definen la solución y delimitan su alcanc
   \end{itemize}
 \end{description}
 
+\subsubsection*{Catálogo de tipos documentales}
+
+Los requerimientos RF-05 y RF-13 remiten al catálogo de tipos documentales, que fija para cada tipo los metadatos sin los cuales el registro no se acepta y el plazo máximo de atención que sirve de referencia al módulo de control estadístico. La Tabla~\ref{tab:catalogo_tipos} presenta la versión 1.0 del catálogo, acordada con las oficinas participantes durante la fase de diagnóstico. El catálogo es administrable desde el módulo M6 y se versiona, de modo que un expediente conserva la versión del catálogo con la que fue registrado y los plazos de un expediente en trámite no cambian retroactivamente.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.3}
+  \caption{Catálogo de tipos documentales, versión 1.0: metadatos obligatorios y plazo de atención.}
+  \label{tab:catalogo_tipos}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.9cm}@{}}
+    \toprule
+    \textbf{Tipo documental} & \textbf{Metadatos obligatorios} & \textbf{Plazo} \\
+    \midrule
+    Solicitud de inscripción registral & Folio real, nombre del solicitante, tipo de acto jurídico, autoridad o notaría emisora, fecha del instrumento & 5 días hábiles \\
+    Solicitud de certificado & Folio real o antecedente registral, nombre del titular, tipo de certificado, periodo solicitado & 3 días hábiles \\
+    Solicitud de traslado de dominio & Clave catastral, folio real, enajenante, adquirente, valor de la operación & 7 días hábiles \\
+    Avalúo catastral & Clave catastral, ubicación del predio, superficie, perito valuador, fecha del avalúo & 10 días hábiles \\
+    Oficio o turno interno & Asunto, oficina destino, servidor público remitente, prioridad & 2 días hábiles \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection*{Catálogo de oficinas}
+
+La clave de tres caracteres que forma la segunda posición del folio proviene del catálogo de oficinas, que la Tabla~\ref{tab:catalogo_oficinas} presenta en su versión inicial. El catálogo recoge las cuatro oficinas que participan en el despliegue y es la fuente de los parámetros de dimensionamiento que se exponen más adelante; cada oficina lleva su propio consecutivo anual, de modo que los folios de dos oficinas nunca compiten por el mismo número.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.3}
+  \caption{Catálogo de oficinas participantes, con la clave que forma el folio y su carga documental.}
+  \label{tab:catalogo_oficinas}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{2.2cm}@{}}
+    \toprule
+    \textbf{Clave} & \textbf{Oficina} & \textbf{Solicitudes al año} & \textbf{Usuarios} \\
+    \midrule
+    \texttt{RPV} & Registral de Ciudad Victoria & 5\,800 & 16 \\
+    \texttt{CAV} & Catastral de Ciudad Victoria & 4\,800 & 12 \\
+    \texttt{RPR} & Registral de Reynosa & 4\,200 & 11 \\
+    \texttt{RPT} & Registral de Tampico & 2\,600 & 7 \\
+    \midrule
+    & \textbf{Total} & \textbf{17\,400} & \textbf{46} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsubsection*{Unicidad del folio y su comprobación}
+
+La unicidad que exige RF-04 no se confía a la aplicación. El consecutivo vive en una tabla de contadores con una fila por combinación de oficina y año, y su incremento ocurre dentro de una transacción que toma un bloqueo exclusivo sobre esa fila antes de leerla; la base de datos refuerza la garantía con una restricción de unicidad sobre la terna oficina, año y consecutivo, de modo que un folio duplicado sería rechazado por el motor aunque la lógica de la aplicación fallara. La justificación de este diseño es la expuesta en la Sección~\ref{subsec:mt_bases_datos} a propósito de las transacciones ACID.
+
+La comprobación consiste en lanzar sobre el entorno de pruebas cincuenta procesos concurrentes que registren veinte solicitudes cada uno en la misma oficina y el mismo año, es decir mil registros simultáneos, y verificar después tres condiciones sobre la base de datos: que existan exactamente mil folios, que el conteo de folios distintos sea igual al total, y que la secuencia de consecutivos vaya de \texttt{000001} a \texttt{001000} sin huecos ni repeticiones. La prueba se considera superada solo si las tres se cumplen, y se repite tras cualquier cambio en el servicio de folios. Su resultado se documenta en la Sección~\ref{sec:desarrollo_sistema}.
+
 El marco teórico sostiene, siguiendo a ISO/IEC/IEEE 29148, que ningún requerimiento debe existir sin un hallazgo que lo motive y ningún hallazgo debe quedar sin requerimiento que lo atienda. La Tabla~\ref{tab:trazabilidad} comprueba esa condición sobre los cinco puntos de pérdida de trazabilidad enunciados en el planteamiento del problema.
 
 \begin{table}[H]
@@ -125,7 +176,7 @@ El marco teórico sostiene, siguiendo a ISO/IEC/IEEE 29148, que ningún requerim
     \midrule
     Tránsito invisible & Estado explícito del expediente en cada etapa, con fecha de turnado y de acuse, e historial consultable & RF-08, RF-11 \\
     Ausencia de identificador único & Folio institucional generado por el sistema, con clave de oficina y consecutivo anual irrepetible & RF-04 \\
-    Registro heterogéneo & Metadatos obligatorios definidos por tipo documental y configurables desde la administración & RF-05, RF-17 \\
+    Registro heterogéneo & Metadatos obligatorios definidos por tipo documental, configurables desde el módulo de administración sin intervención del desarrollador & RF-05, RF-17 \\
     Consulta sin huella & Asiento en bitácora de toda consulta y descarga, con garantía de inalterabilidad en el motor & RF-15, RF-16 \\
     Sustitución sin versionado & Conservación de las versiones anteriores con el motivo del cambio, sin borrado del antecedente & RF-07 \\
     \bottomrule
@@ -136,7 +187,30 @@ El marco teórico sostiene, siguiendo a ISO/IEC/IEEE 29148, que ningún requerim
 
 Los requerimientos no funcionales se formulan sobre las características del modelo de calidad ISO/IEC 25010 \cite{iso25010} y se acompañan del valor que permite comprobarlos, para evitar enunciados como ``el sistema será rápido''.
 
-Los valores de la Tabla~\ref{tab:rnf} son metas de diseño derivadas del volumen documental y del número de usuarios que el Instituto maneja hoy en las oficinas participantes. Se consignan desde ahora porque un requerimiento no funcional sin cifra no es verificable, y se confirman o se ajustan con el Instituto durante la fase de especificación, en la misma acta en que se valida el catálogo funcional. Lo que no admite ajuste es su carácter medible: la cifra podrá cambiar, pero cada enunciado conservará una prueba que lo decida.
+Los valores de la Tabla~\ref{tab:rnf} no son cifras arbitrarias: se derivan de los parámetros de dimensionamiento levantados durante la fase de diagnóstico, que la Tabla~\ref{tab:dimensionamiento} consigna con su origen. Esos parámetros provienen de tres fuentes, todas internas al Instituto: el conteo de solicitudes atendidas en las cuatro oficinas participantes durante el ejercicio anterior, tomado de sus controles propios; el padrón de personal adscrito a esas oficinas; y la medición del tamaño de los archivos digitalizados en la muestra revisada durante el diagnóstico.
+
+\begin{table}[H]
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.3}
+  \caption{Parámetros de dimensionamiento levantados en la fase de diagnóstico y meta que cada uno sustenta.}
+  \label{tab:dimensionamiento}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Parámetro} & \textbf{Valor} & \textbf{Meta que sustenta} \\
+    \midrule
+    Oficinas participantes & 4 & Alcance del despliegue; sus claves y cargas constan en la Tabla~\ref{tab:catalogo_oficinas} \\
+    Solicitudes atendidas en el ejercicio anterior & 17\,400 al año, desglosadas por oficina en la Tabla~\ref{tab:catalogo_oficinas} & Crecimiento previsto del acervo \\
+    Acervo proyectado a tres años de operación & 52\,200 expedientes & RNF-01: 50\,000 expedientes como carga de prueba \\
+    Personal adscrito con acceso al sistema & 46 usuarios & Dimensionamiento de sesiones y perfiles \\
+    Concurrencia en hora pico, estimada en 40\,\% del padrón & 18 usuarios & RNF-01: 20 usuarios concurrentes \\
+    Tamaño medio del archivo digitalizado & 1.8 MB & RNF-04: volumen diario del respaldo \\
+    Volumen estimado del acervo a tres años & 94 GB & RNF-04: dimensionamiento del almacenamiento \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Las metas de la Tabla~\ref{tab:rnf} redondean estos valores al alza, de modo que el sistema se pruebe por encima de la carga esperada y no justo en ella. Los parámetros se revalidan con el Instituto al cierre de la fase de especificación; lo que no admite ajuste es su carácter medible: la cifra podrá cambiar, pero cada enunciado conservará una prueba que lo decida.
 
 \begin{table}[H]
   \centering
@@ -162,7 +236,7 @@ Los valores de la Tabla~\ref{tab:rnf} son metas de diseño derivadas del volumen
 
 \subsection{Usuarios y roles}
 
-El sistema reconoce seis perfiles. El permiso efectivo de cada usuario no resulta únicamente de su rol, sino de la intersección entre ese rol y la oficina a la que está adscrito, conforme al principio de privilegio mínimo expuesto en el marco teórico.
+El sistema reconoce seis perfiles, que la Tabla~\ref{tab:roles} describe con su responsabilidad y su ámbito de actuación. El permiso efectivo de cada usuario no resulta únicamente de su rol, sino de la intersección entre ese rol y la oficina a la que está adscrito. Esta extensión del control de acceso basado en roles no constituye un modelo nuevo: la Sección~\ref{subsec:mt_seguridad} cita el modelo normalizado por el NIST~\cite{ferraiolo2001nist} y el control basado en atributos~\cite{hu2014abac}, y precisa en qué difiere la propuesta de ambos y por qué se eligió, además del principio de privilegio mínimo que la sustenta.
 
 \begin{table}[H]
   \centering
@@ -240,7 +314,9 @@ La Tabla~\ref{tab:objetivo_componente} relaciona cada objetivo específico enunc
 
 El proyecto se desarrolla en catorce semanas, del lunes 31 de agosto al viernes 4 de diciembre de 2026, con una carga de 600 horas. La Tabla~\ref{tab:cronograma} distribuye el trabajo en seis fases alineadas con los objetivos específicos.
 
-Dos criterios ordenan esa distribución. El primero es que las seis semanas centrales se reservan íntegras al desarrollo, de modo que los tres sprints de dos semanas comprometidos en la metodología quepan completos y ninguno deba recortarse sobre la marcha. El segundo es que las dos primeras semanas y las dos últimas no se asignan a construcción: las iniciales corresponden al diagnóstico y las finales a pruebas, liberación y transferencia. Reservarlas de antemano responde al riesgo más frecuente en proyectos de este tipo, que es que el desarrollo se extienda hasta absorber el tiempo de las pruebas y de la capacitación, y que el sistema termine entregado pero no adoptado.
+Las catorce semanas se reparten así: dos de diagnóstico, una de especificación, dos de diseño, una de implementación del entorno, seis de desarrollo y dos de pruebas, liberación y transferencia. La suma es exacta y no hay semanas sin asignar.
+
+Dos criterios ordenan esa distribución. El primero es que las seis semanas centrales se reservan íntegras al desarrollo, de modo que los tres sprints de dos semanas comprometidos en la metodología quepan completos y ninguno deba recortarse sobre la marcha. El segundo es que las dos primeras semanas y las dos últimas no se asignan a construcción: las iniciales corresponden al diagnóstico y las finales a pruebas, liberación y transferencia. Reservarlas de antemano responde al riesgo más frecuente en proyectos de este tipo, que es que el desarrollo se extienda hasta absorber el tiempo de las pruebas y de la capacitación, y que el sistema termine entregado pero no adoptado. Las cuatro semanas restantes son las de especificación, diseño e implementación del entorno, que preceden al desarrollo porque ninguno de los tres sprints puede comenzar sin requerimientos validados, sin modelo de datos y sin entorno operando.
 
 La fase de especificación ocupa una sola semana porque no comienza de cero: la elicitación de requerimientos se inicia durante el diagnóstico, al conversar con los responsables de cada oficina sobre el proceso vigente, de manera que esa semana se dedica a formalizar, depurar y validar lo ya recogido.
 
@@ -263,6 +339,15 @@ La fase de especificación ocupa una sola semana porque no comienza de cero: la 
     \bottomrule
   \end{tabularx}
 \end{table}
+
+La Figura~\ref{fig:gantt} representa la misma distribución en el tiempo. Las tres referencias del cronograma —el texto de los párrafos anteriores, la Tabla~\ref{tab:cronograma} y esta figura— consignan las mismas seis fases sobre las mismas catorce semanas; el rombo al cierre de cada barra marca el entregable verificable con el que esa fase se da por concluida.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{img/gantt.pdf}
+  \caption{Cronograma del proyecto: seis fases sobre las catorce semanas del periodo de estadía, con los tres sprints de dos semanas dentro de la fase de desarrollo.}
+  \label{fig:gantt}
+\end{figure}
 
 El módulo de bitácora se construye en el primer incremento y no al final, pese a no ser el más visible. La razón es que los módulos posteriores escriben en él: si se dejara para el cierre, los movimientos de los módulos ya construidos no habrían quedado registrados y el control estadístico carecería de datos sobre los cuales operar.
 

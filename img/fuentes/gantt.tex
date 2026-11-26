@@ -1,0 +1,52 @@
+\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric}
+
+\begin{document}
+\begin{tikzpicture}[x=9mm, y=-7.5mm, font=\small]
+
+% --- rejilla de semanas ---
+\foreach \w in {1,...,14}{
+  \draw[draw=black!15] (\w-0.5,0.3) -- (\w-0.5,7.0);
+  \node[font=\scriptsize, text=black!60] at (\w,0) {\w};
+}
+\draw[draw=black!15] (14.5,0.3) -- (14.5,7.0);
+\node[font=\scriptsize\itshape, text=black!55, anchor=south] at (7.5,-0.35) {Semana};
+
+% --- hitos de inicio y fin ---
+\node[font=\scriptsize, text=black!55, anchor=south west] at (0.5,-0.9) {31 ago};
+\node[font=\scriptsize, text=black!55, anchor=south east] at (14.5,-0.9) {4 dic};
+
+% --- fases ---
+\foreach \y/\ini/\fin/\nom in {%
+  1/1/2/{1. Diagnóstico},
+  2/3/3/{2. Especificación y planeación},
+  3/4/5/{3. Diseño},
+  4/6/6/{4. Implementación del entorno},
+  5/7/12/{5. Desarrollo por incrementos},
+  6/13/14/{6. Pruebas, liberación y transferencia}}{
+  \node[anchor=east, font=\small] at (0.3,\y) {\nom};
+  \fill[black!18, draw=black!55, rounded corners=1pt]
+    (\ini-0.42,\y-0.3) rectangle (\fin+0.42,\y+0.3);
+}
+
+% --- sprints dentro de la fase de desarrollo ---
+\foreach \s/\ini/\fin in {1/7/8, 2/9/10, 3/11/12}{
+  \draw[draw=black!60] (\ini-0.42,4.7) -- (\ini-0.42,5.3);
+  \node[font=\scriptsize, text=black!65] at ({(\ini+\fin)/2},5.62) {Sprint \s};
+}
+\draw[draw=black!60] (12.42,4.7) -- (12.42,5.3);
+
+% --- entregables al cierre de cada fase ---
+\foreach \y/\x in {1/2, 2/3, 3/5, 4/6, 5/12, 6/14}{
+  \node[diamond, fill=black!70, inner sep=1.3pt] at (\x+0.42,\y) {};
+}
+\node[diamond, fill=black!70, inner sep=1.3pt] at (15.1,3.5) {};
+\node[anchor=west, font=\scriptsize\itshape, text=black!55] at (15.35,3.5)
+  {\begin{tabular}{@{}l@{}}Entregable\\verificable\end{tabular}};
+
+\end{tikzpicture}
+\end{document}

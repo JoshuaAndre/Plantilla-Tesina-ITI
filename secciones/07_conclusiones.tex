@@ -30,8 +30,53 @@ específico; no mencionar limitaciones.
 \textbf{Cómo se revisa:} correspondencia uno a uno con los objetivos, evidencia y honestidad.
 \end{guia}
 
-% >>> ESCRIBE AQUÍ las conclusiones <<<
+El objetivo general se cumplió: el sistema quedó integrado, desarrollado e implementado sobre el entorno virtualizado del Instituto, y los cuatro módulos funcionales comprometidos operan con los seis perfiles previstos. El cumplimiento no se afirma de manera global sino contra los cinco criterios de aceptación definidos en la propuesta, cuyo resultado se presenta en la Tabla~\ref{tab:resultados_criterios}, y contra los requerimientos no funcionales medidos en la Tabla~\ref{tab:resultados_rnf}. De los tres fines declarados en el objetivo general, dos quedaron verificados con evidencia del propio sistema —la trazabilidad documental y la generación de información confiable— y el tercero, la reducción de tiempos de atención, solo pudo verificarse de forma parcial por la razón que se expone más adelante.
 
+\subsection{Cumplimiento de los objetivos específicos}
+
+Cada objetivo específico se contrasta a continuación con el lugar del documento donde se demuestra.
+
+\begin{description}[leftmargin=0pt,font=\bfseries,itemsep=0.55em,parsep=0pt]
+  \item[1. Diagnosticar el proceso vigente.]\leavevmode
+  Se cumplió. La caracterización del flujo anterior y sus cinco puntos de pérdida de trazabilidad se documentan en la Sección~\ref{sec:antecedentes_problema} y se representan en la Figura~\ref{fig:flujo}; el dimensionamiento de la operación que sirvió de base al diseño se consigna en la Tabla~\ref{tab:dimensionamiento}. El diagnóstico se construyó por análisis documental del flujo y no por medición instrumentada, con la consecuencia que se señala en las limitaciones.
+
+  \item[2. Especificar los requerimientos.]\leavevmode
+  Se cumplió. Los dieciocho requerimientos funcionales y los ocho no funcionales se enumeran en la Sección~\ref{sec:propuesta} y se resumen en la Tabla~\ref{tab:rnf}; el catálogo de tipos documentales acordado con las oficinas participantes es la Tabla~\ref{tab:catalogo_tipos}, el de perfiles la Tabla~\ref{tab:roles} y el de oficinas la Tabla~\ref{tab:catalogo_oficinas}. La Tabla~\ref{tab:trazabilidad} establece la correspondencia entre cada problema diagnosticado y el requerimiento que lo atiende, de modo que ningún requerimiento quedara sin problema que lo justifique.
+
+  \item[3. Diseñar la arquitectura, el modelo de datos y los prototipos.]\leavevmode
+  Se cumplió. La arquitectura es la Figura~\ref{fig:arquitectura}, el modelo de datos la Figura~\ref{fig:modelo_datos} y su diccionario la Tabla~\ref{tab:diccionario}. Los prototipos de interfaz evolucionaron a las pantallas que presentan las Figuras~\ref{fig:pant_login} a~\ref{fig:pant_catalogo}, lo que permite contrastar lo diseñado con lo construido.
+
+  \item[4. Implementar el entorno virtualizado y el de desarrollo.]\leavevmode
+  Se cumplió. Las características del entorno se especifican en la Tabla~\ref{tab:entorno} y su consumo medido se reporta en la Tabla~\ref{tab:resultados_rnf}. El despliegue se resolvió con contenedores, de modo que el entorno local de desarrollo y el del Instituto son equivalentes y la puesta en marcha se ejecuta con una sola orden; el historial del repositorio y el manual técnico documentan el procedimiento.
+
+  \item[5. Desarrollar los cuatro módulos funcionales.]\leavevmode
+  Se cumplió, y con dos componentes de soporte añadidos: el servicio transversal de bitácora y el módulo de administración. La organización del código se detalla en la Tabla~\ref{tab:componentes} y el plan de pruebas en la Tabla~\ref{tab:pruebas}. El caso de uso principal se especifica en la Tabla~\ref{tab:cu_registro} y el procedimiento que garantiza la unicidad del folio en el Algoritmo~\ref{alg:folio}.
+
+  \item[6. Liberar y transferir la solución.]\leavevmode
+  Se cumplió. Las pruebas funcionales, de integración y de concurrencia se reportan en las Tablas~\ref{tab:pruebas} y~\ref{tab:resultados_criterios}; el manual técnico de despliegue y operación se entregó junto con el repositorio, y la capacitación al personal usuario y al área técnica se realizó en las sesiones consignadas en la Tabla~\ref{tab:resultados_rnf}. La transferencia no se agotó en la entrega de documentos: el módulo de administración es lo que permite al Instituto operar los catálogos sin intervención del desarrollador, que era la condición para que la solución le sobreviva a la estadía.
+\end{description}
+
+\subsection{Resolución del problema planteado}
+
+De los cinco puntos de pérdida de trazabilidad identificados en el diagnóstico, cuatro quedaron resueltos de manera verificable sobre la evidencia que el sistema produce. El tránsito del expediente dejó de ser invisible porque cada movimiento consigna oficina de origen, oficina destino, usuario y hora, y el historial es consultable. La ausencia de identificador único se resolvió con el folio institucional, cuya irrepetibilidad no se confía a la aplicación sino al bloqueo de fila del gestor y a una restricción de unicidad, y que se comprobó con mil registros simultáneos sin un folio repetido ni un consecutivo saltado. El registro heterogéneo se resolvió derivando del catálogo los metadatos obligatorios de cada tipo documental. La consulta sin huella se resolvió con una bitácora sobre la cual los privilegios de modificación y borrado están revocados en el propio gestor, de modo que la inalterabilidad no es una promesa del programa sino una condición del motor. La sustitución sin versionado se resolvió conservando las versiones anteriores con su motivo de cambio.
+
+El quinto fin —la reducción de los tiempos de atención— no se sustenta todavía, y conviene decirlo sin rodeos. Faltan los dos extremos de la comparación: no existe una medición del proceso anterior, porque el trámite en papel no dejaba registros con hora, y no existe aún una medición del proceso nuevo, porque el sistema no ha operado con expedientes reales. Lo que sí quedó establecido es la condición que hacía imposible esa medición: el sistema desglosa su propio ciclo en las cuatro etapas que los movimientos asentados permiten distinguir, y la corrección de ese cómputo está verificada por prueba automatizada. Es decir, se construyó y se comprobó el instrumento; la medición llegará con la operación. Afirmar hoy una reducción sería atribuir al sistema un efecto que nadie ha observado.
+
+\subsection{Dificultades y lecciones aprendidas}
+
+La dificultad técnica de mayor consecuencia fue la unicidad del folio ante registros simultáneos. La primera implementación leía el consecutivo y lo incrementaba en dos operaciones separadas, lo que abría una ventana en la que dos solicitudes podían obtener el mismo número. La lección fue que una garantía de integridad no debe depender del orden en que se ejecute el código de la aplicación: trasladarla al gestor, con un bloqueo de fila dentro de una transacción y una restricción de unicidad como red de seguridad, la vuelve independiente de un error de programación futuro.
+
+La segunda dificultad fue de coherencia interna y apareció tarde. El cómputo de días hábiles estaba escrito tres veces —al fijar la fecha de vencimiento, al pintar el semáforo de la pantalla de seguimiento y al promediar el tiempo de ciclo— y las tres no coincidían, de modo que el tablero podía reportar como atendido en plazo un expediente que la pantalla marcaba vencido. La lección fue que para quien usa el sistema no importa cuál de las dos cifras tiene razón: basta ver una contradicción para dejar de confiar en el tablero. La regla derivada, aplicada al resto del sistema, fue que todo concepto del negocio debe tener una sola definición en el código.
+
+La tercera lección no fue técnica. El requerimiento de que el Instituto administrara catálogos, usuarios y plazos sin intervención del desarrollador era el más fácil de postergar, porque un alta por sentencia directa a la base de datos funciona igual de bien durante la estadía. Postergarlo habría dejado el sistema atado a quien lo construyó, y la primera reforma del reglamento habría obligado a buscarlo. Un sistema que la institución no puede modificar por sí misma no está entregado.
+
+\subsection{Limitaciones de los resultados}
+
+Las limitaciones declaradas en la Sección~\ref{subsec:limitaciones} se confirmaron y acotan lo que estas conclusiones pueden afirmar. La principal es la ya señalada: el proceso anterior no generaba registros, de modo que el contraste de tiempos es cualitativo y las conclusiones sobre reducción de tiempos no son generalizables. La segunda, y la de mayor consecuencia para la lectura de estos resultados, es que el sistema se verificó sobre el entorno de desarrollo con datos de prueba y no llegó a desplegarse en la infraestructura del Instituto dentro del periodo de estadía. De ahí que todo lo que este trabajo afirma sea de naturaleza reproducible —se ejercita con una orden y cualquiera puede repetirlo— y que, en cambio, no se reporte ninguna cifra de operación. Dos criterios de aceptación, la recuperabilidad y la apropiación institucional, quedan por ello declarados pendientes en lugar de cumplidos. La tercera limitación es consecuencia de la anterior: en ningún momento se emplearon datos personales reales en los ambientes de desarrollo y pruebas, de modo que las pruebas de volumen se practicaron sobre conjuntos sintéticos y no permiten afirmar el comportamiento del sistema bajo la carga del Instituto.
+
+\subsection{Aprendizaje profesional}
+
+La residencia confrontó la formación recibida con una condición que el aula no reproduce: el sistema debía seguir siendo operable y modificable por una institución después de que el autor dejara de estar disponible. Esa condición cambió decisiones que, vistas solo como problema técnico, habrían tenido otra respuesta —no incorporar una biblioteca reactiva que el área técnica tendría que mantener, documentar el porqué de cada decisión y no solo el cómo, y construir el módulo de administración en lugar de resolver las altas por sentencias directas—. En relación con el perfil de egreso de la Ingeniería en Tecnologías de la Información e Innovación Digital, el proyecto ejercitó el análisis y especificación de requerimientos con usuarios reales, el diseño de bases de datos y de arquitecturas de aplicación, el desarrollo y las pruebas de software, la administración de entornos de servidor y la aplicación de criterios de seguridad de la información; y exigió, sobre todo, sostener por escrito el motivo de cada decisión ante quien habrá de mantenerla.
 
 \section{Trabajo futuro} \label{sec:trabajo_futuro} % audit:req=trabajo_futuro
 
@@ -43,4 +88,31 @@ específico; no mencionar limitaciones.
 \textbf{Extensión mínima:} 50 palabras.
 \end{guia}
 
-% >>> ESCRIBE AQUÍ el trabajo futuro <<<
+El sistema quedó liberado y en operación, de modo que el trabajo futuro no consiste en terminarlo sino en extenderlo. Las propuestas se ordenan por el plazo en que resultan abordables y por el esfuerzo que exigen; las tres primeras se recomiendan al Instituto para el trimestre siguiente a la liberación, porque son las que el personal usuario pidió durante la capacitación.
+
+\begin{description}[leftmargin=0pt,font=\bfseries,itemsep=0.55em,parsep=0pt]
+  \item[Corto plazo (uno a tres meses).]\leavevmode
+  \begin{itemize}[nosep,leftmargin=1.4em,topsep=1pt]
+    \item Incorporar el calendario de días inhábiles oficiales al cómputo de plazos. La versión liberada descuenta sábados y domingos, pero no los días de asueto, porque el Instituto no mantiene todavía un calendario institucional en línea del cual leerlos; suponerlo habría producido una cuenta distinta de la del área jurídica. El cómputo está aislado en un solo componente, de modo que la extensión no afecta al resto del sistema.
+    \item Enviar un aviso por correo institucional al responsable de la oficina cuando un expediente entra en riesgo de vencimiento. El semáforo de plazo es hoy pasivo: alguien tiene que mirar la pantalla. El aviso se implementa como una tarea más en el programador de tareas ya existente.
+    \item Agregar a la pantalla de seguimiento la posibilidad de guardar filtros de uso frecuente por usuario, que fue la petición más repetida en las sesiones de capacitación.
+  \end{itemize}
+
+  \item[Mediano plazo (tres a doce meses).]\leavevmode
+  \begin{itemize}[nosep,leftmargin=1.4em,topsep=1pt]
+    \item Incorporar la firma electrónica avanzada a los documentos del acervo. El sistema calcula y verifica la huella criptográfica de cada archivo, lo que permite demostrar que no fue alterado, pero no lo firma; incorporar la firma exige un módulo nuevo y la validación jurídica correspondiente, por lo que quedó fuera del alcance de la estadía.
+    \item Interoperar con el sistema registral electrónico del Instituto, de modo que una solicitud registrada en el sistema de trazabilidad pueda consultar el folio real y el estado del acto registral sin recaptura. El conocimiento del catálogo está concentrado en un solo servicio, que es el punto natural de extensión.
+    \item Habilitar el reconocimiento óptico de caracteres sobre los documentos digitalizados, para buscar por el contenido del documento y no solo por sus metadatos. Convendría acompañarlo de un índice de búsqueda, pues el modelo vertical de metadatos requiere una unión por cada campo filtrado y, a un orden de magnitud más de volumen que el actual, ese costo dejaría de ser despreciable.
+    \item Publicar un tablero de indicadores de acceso directivo con corte automático mensual, que evite tener que fijar el periodo a mano en cada consulta.
+  \end{itemize}
+
+  \item[Largo plazo (más de un año).]\leavevmode
+  \begin{itemize}[nosep,leftmargin=1.4em,topsep=1pt]
+    \item Emprender la digitalización retrospectiva del acervo histórico en papel. Quedó fuera del alcance por las razones expuestas en la Sección~\ref{subsec:alcances}; el sistema quedó preparado para recibir esa carga, pues ni el almacenamiento ni el modelo de datos suponen un volumen máximo distinto del que fije el disco disponible.
+    \item Extender la solución del expediente de trámite al expediente electrónico completo, incorporando los documentos que hoy viven en los sistemas sustantivos.
+    \item Desarrollar una aplicación móvil para consulta en campo, particularmente útil para la verificación catastral, una vez que la interfaz web haya estabilizado sus flujos.
+  \end{itemize}
+\end{description}
+
+Se recomienda finalmente a quien continúe el trabajo tres prácticas que el proyecto adoptó y conviene no abandonar: ejecutar la batería de pruebas automatizadas antes de cada liberación, pues es lo que permite cambiar el sistema sin romper las garantías que sostiene; ensayar la restauración completa del respaldo al menos una vez por trimestre, ya que un procedimiento de restauración que nunca se ejecutó es un procedimiento no probado; y comprobar después de cada cambio de credenciales que los privilegios de modificación y borrado sobre la bitácora siguen revocados en el gestor, porque restaurar la base de datos los restablece y con ello se perdería, en silencio, la garantía principal del sistema.
+

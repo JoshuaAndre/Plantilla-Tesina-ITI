@@ -28,8 +28,6 @@ nada concreto; dejar la introducción para el final y no actualizarla cuando el 
 organización descrita coincida con las secciones reales del documento.
 \end{guia}
 
-% >>> ESCRIBE AQUÍ el texto de la introducción (fuera de la guía) <<<
-
 La administración pública estatal sostiene su funcionamiento sobre el documento. Cada trámite que un ciudadano inicia y cada resolución que una autoridad emite quedan asentados en un soporte documental que debe conservarse, localizarse y, llegado el caso, comprobarse ante instancias de control. Cuando ese soporte circula en papel y su control se lleva de manera manual, la institución conserva los documentos pero pierde el rastro de lo que ocurre con ellos.
 
 El Instituto Registral y Catastral del Estado de Tamaulipas es un organismo público descentralizado de la administración pública estatal, con personalidad jurídica y patrimonio propio, que tiene por objeto desarrollar las tareas del Registro Público de la Propiedad Inmueble y del Comercio, así como del Catastro del Estado, mediante la coordinación entre ambos servicios \cite{poe2022irct}. Su función sustantiva consiste en otorgar certeza jurídica sobre los actos relacionados con el derecho de propiedad, lo que implica que la documentación que resguarda no es meramente administrativa: constituye el respaldo material de derechos patrimoniales de los particulares.
@@ -41,8 +39,6 @@ El presente trabajo describe la integración de un sistema que centraliza este p
 La solución no se limita al desarrollo del software: contempla también la creación y configuración del entorno virtualizado que la aloja, la definición de políticas de seguridad, respaldo y monitoreo, y su liberación a producción. Esta dimensión de infraestructura sustenta el carácter de integración de tecnologías de información del proyecto, ya que el resultado entregado es un sistema operando en un ambiente real y administrado, y no un prototipo aislado.
 
 El documento se organiza de la siguiente manera. La presente sección plantea el problema, fija los objetivos, justifica el trabajo y delimita su alcance. La Sección~\ref{sec:antecedentes} describe al organismo receptor y revisa las plataformas de gestión documental existentes frente a la propuesta. La Sección~\ref{sec:marco_teorico} reúne los conceptos y estándares necesarios para comprender el desarrollo. La Sección~\ref{sec:propuesta} expone la arquitectura de la solución, sus requerimientos y el plan de trabajo; la Sección~\ref{sec:desarrollo_sistema} documenta su construcción, el modelo de datos y las pruebas, y la Sección~\ref{sec:conclusiones} presenta las conclusiones y el trabajo futuro.
-
-
 
 \subsection{Planteamiento del problema} \label{sec:problema} % audit:req=planteamiento
 
@@ -67,8 +63,6 @@ problemas sin evidencia; enunciados tan amplios que no se pueden resolver en una
 \textbf{Cómo se revisa:} que el problema esté delimitado, sea verificable y que los objetivos lo atiendan.
 \end{guia}
 
-% >>> ESCRIBE AQUÍ el planteamiento del problema <<<
-
 El proceso documental vigente se apoya en tres mecanismos desarticulados: el traslado físico del expediente entre oficinas, la entrega presencial con sello y firma de recibido, y el registro manual en libretas u hojas de cálculo administradas localmente por cada oficina. Este esquema no es una elección deliberada, sino el resultado de que el flujo administrativo interno nunca fue formalizado en un procedimiento documentado, de modo que cada oficina resolvió su control de la manera que le resultó práctica.
 
 De ahí se derivan cuatro cuellos de botella. El traslado físico somete el tiempo de ciclo del documento a la logística de transporte y no al trabajo sustantivo que debe realizarse sobre él. La doble captura obliga a registrar los mismos datos en la oficina emisora y en la receptora, lo que duplica el esfuerzo e introduce discrepancias entre ambos registros. La búsqueda en archivo depende del conocimiento tácito del encargado, de modo que su ausencia detiene la consulta. Y la integración manual de reportes produce información tardía que no puede verificarse contra la fuente que la originó.
@@ -88,8 +82,6 @@ Conviene precisar el origen de esta caracterización. El proceso vigente no est�
 La consecuencia conjunta es que el Instituto conserva sus documentos pero no puede dar cuenta de su ciclo de vida. Esto adquiere particular relevancia en una institución cuya documentación soporta derechos de propiedad y que, como sujeto obligado, está sometida a la normativa en materia de archivos \cite{lga2018} y de protección de datos personales \cite{lgpdppso2017}. De no atenderse, la institución continuará sin poder responder con certeza dónde está un expediente, quién accedió a él ni cuánto trabajo documental realiza cada oficina, y seguirá tomando decisiones de carga de trabajo sobre cifras que no son verificables.
 
 El problema se enuncia así: \textbf{¿de qué manera puede integrarse un sistema que automatice el proceso de solicitud, carga, consulta y control estadístico de documentos en el Instituto Registral y Catastral del Estado de Tamaulipas, de modo que se reduzcan los tiempos de atención y se garantice la trazabilidad documental sobre una infraestructura administrable por la propia institución?}
-
-
 
 \subsection{Objetivos} \label{sec:objetivos} % audit:req=objetivos
 
@@ -116,13 +108,10 @@ con tiempo definido.
 \end{guia}
 
 \subsubsection{Objetivo general} \label{subsec:objetivo_general}
-% >>> ESCRIBE AQUÍ el objetivo general (una sola oración) <<<
 
 Integrar un sistema que automatice el proceso de solicitud, carga, consulta y control estadístico de documentos en el Instituto Registral y Catastral del Estado de Tamaulipas, mediante su desarrollo e implementación sobre un entorno virtualizado, con el fin de reducir los tiempos de atención, garantizar la trazabilidad documental y generar información confiable para la toma de decisiones.
 
-
 \subsubsection{Objetivos específicos} \label{subsec:objetivos_especificos}
-% >>> ESCRIBE AQUÍ los objetivos específicos como lista numerada: \begin{enumerate} \item ... \end{enumerate} <<<
 
 \begin{enumerate}
   \item \textbf{Diagnosticar} el proceso vigente de solicitud y resguardo documental, identificando tiempos de atención, cuellos de botella y puntos donde se pierde la trazabilidad. \textit{Verificable con} el documento de diagnóstico y la caracterización del flujo.
@@ -191,8 +180,6 @@ eficiencia''); olvidar al beneficiario.
 \textbf{Cómo se revisa:} que los beneficios sean concretos y consistentes con el problema y los objetivos.
 \end{guia}
 
-% >>> ESCRIBE AQUÍ la justificación <<<
-
 El Instituto ejecuta actualmente un Proyecto Ejecutivo de Modernización Integral orientado a optimizar sus procesos técnicos, administrativos y tecnológicos \cite{tamaulipas2025mod}. El presente proyecto se inserta en esa línea de trabajo atendiendo el flujo administrativo interno de la documentación, que es la capa sobre la que descansan los procesos sustantivos ya modernizados. Conviene precisar el alcance de esta aportación: el Registro Público del Estado opera desde 2019 bajo un sistema registral electrónico que atiende los trámites registrales de forma digital \cite{futuver2024}. Lo que este proyecto atiende no es ese proceso sustantivo, sino el flujo administrativo que circula entre las oficinas y que continúa operando en papel. El sistema propuesto no inscribe, no califica jurídicamente y no certifica; administra, resguarda y da trazabilidad a los documentos que soportan esas funciones.
 
 Los beneficiarios son tres. El personal operativo de cada oficina deja de capturar dos veces los mismos datos y deja de depender del traslado físico para saber si un documento llegó. Los titulares y directivos obtienen, por primera vez, cifras de volumen y de tiempo de atención que pueden verificarse contra el detalle que las originó. Y el ciudadano percibe una reducción en la espera, porque buena parte del tiempo que hoy transcurre no proviene de la calificación jurídica de su asunto sino del desplazamiento y el registro manual del expediente.
@@ -202,8 +189,6 @@ Desde el punto de vista técnico, la solución resuelve dos problemas con un mis
 En el plano normativo, el registro auditable de cada acceso y el esquema de permisos diferenciados contribuyen al cumplimiento de las obligaciones que la Ley General de Archivos \cite{lga2018} y la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados \cite{lgpdppso2017} imponen a la institución. De no realizarse el proyecto, esas obligaciones seguirían atendiéndose sobre un acervo cuyo acceso no deja constancia verificable.
 
 El proyecto es viable ahora porque el Instituto dispone de infraestructura de virtualización propia y porque la solución se construye con herramientas libres, sin costo de licenciamiento. Finalmente, en el plano académico articula las áreas formativas del programa de \ncarrera{} —análisis y modelado de procesos, ingeniería de requerimientos, diseño de bases de datos, desarrollo de aplicaciones web, seguridad informática, administración de servidores y virtualización, y documentación técnica— en un producto que debe operar en un entorno real y ante usuarios reales, que es precisamente lo que el perfil de egreso plantea.
-
-
 
 \subsection{Alcances y limitaciones} \label{sec:alcances_limitaciones} % audit:req=alcances
 
@@ -226,7 +211,6 @@ queda fuera.
 \end{guia}
 
 \subsubsection{Alcances} \label{subsec:alcances}
-% >>> ESCRIBE AQUÍ los alcances <<<
 
 El proyecto comprende el desarrollo completo de una aplicación web con los cuatro módulos funcionales comprometidos en el registro del proyecto: autenticación y control de acceso por rol y oficina de adscripción; solicitud y carga de documentos con validación de formato, tamaño y captura de metadatos; consulta y visualización en línea con bitácora de accesos; y control estadístico con reportes exportables. A ellos se añaden dos componentes de soporte sin los cuales los anteriores no operan: el servicio transversal de bitácora y auditoría, que registra todo evento del sistema y alimenta al módulo estadístico, y la administración de catálogos, usuarios y parámetros, que permite al Instituto operar la solución sin intervención del desarrollador.
 
@@ -236,13 +220,11 @@ En el plano documental se entregan el diagnóstico del proceso, la especificaci�
 
 Queda explícitamente fuera del alcance la digitalización retrospectiva del acervo histórico en papel, por tratarse de un proceso archivístico con requerimientos de equipo y personal ajenos a la estadía; el sistema queda preparado para recibir esa carga posteriormente. También quedan fuera los procesos registrales y catastrales sustantivos, regulados por la legislación aplicable \cite{leyrpp2008, leycatastro2001} y atendidos por el sistema registral electrónico del Instituto, así como la firma electrónica avanzada, el reconocimiento óptico de caracteres y el desarrollo de una aplicación móvil nativa.
 
-
 \subsubsection{Limitaciones} \label{subsec:limitaciones}
-% >>> ESCRIBE AQUÍ las limitaciones <<<
 
 El proyecto se ejecuta durante el periodo de estadía comprendido del 31 de agosto al 4 de diciembre de 2026, con una carga horaria total de 600 horas, lo que acota el alcance a lo que puede construirse, probarse y liberarse dentro de ese lapso y obliga a diferir a trabajo futuro las funcionalidades enumeradas en los alcances.
 
-La limitación de mayor impacto es la dependencia de infraestructura: el proyecto requiere que el Instituto provea el entorno virtualizado con las características mínimas especificadas, y la asignación de ese recurso no depende del estadista sino del área técnica de la institución. Un retraso en su entrega afectaría directamente al cronograma, por lo que se mitiga desarrollando en un entorno local contenedorizado equivalente y migrando después sin cambios en el código.
+La limitación de mayor impacto es la dependencia de infraestructura: el proyecto requiere que el Instituto provea el entorno virtualizado con las características mínimas que especifica la Tabla~\ref{tab:entorno}, y la asignación de ese recurso no depende del estadista sino del área técnica de la institución. Un retraso en su entrega afectaría directamente al cronograma, por lo que se mitiga desarrollando en un entorno local contenedorizado equivalente y migrando después sin cambios en el código.
 
 En segundo lugar, el proyecto opera bajo las políticas de seguridad y de red que el Instituto tenga establecidas, las cuales pueden restringir puertos, accesos remotos o la instalación de componentes, y que no son negociables desde el proyecto.
 

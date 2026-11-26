@@ -1,0 +1,85 @@
+\documentclass[border=8pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,mexico]{babel}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,backgrounds}
+
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\scriptsize, x=1cm, y=1cm,
+  act/.style={rectangle, rounded corners=3pt, draw=black!55, fill=white,
+              align=center, text width=31mm, minimum height=8.5mm, inner sep=2.5pt},
+  sys/.style={act, fill=black!7},
+  small/.style={act, text width=24mm},
+  dec/.style={diamond, aspect=2.3, draw=black!55, fill=white,
+              align=center, inner sep=0pt, font=\tiny, text width=19mm},
+  ini/.style={circle, fill=black!75, minimum size=3.4mm, inner sep=0pt},
+  fin/.style={circle, draw=black!75, line width=0.5pt, fill=white, minimum size=4.6mm, inner sep=0pt},
+  fl/.style={-{Latex[length=1.9mm]}, draw=black!60},
+  et/.style={font=\tiny, text=black!60, inner sep=1.5pt, fill=white}
+]
+
+\def\A{2.1}\def\B{7.4}\def\Cl{12.2}\def\Cr{15.1}\def\Cc{13.65}
+
+% ---------------- carril del capturista ----------------
+\node[ini]            at (\A,-1.0)  (ini) {};
+\node[act]            at (\A,-1.95) (a1)  {Capturar tipo documental\\y metadatos};
+\node[act]            at (\A,-4.5)  (a2)  {Adjuntar el archivo\\del documento};
+\node[act]            at (\A,-7.1)  (a3)  {Turnar el expediente\\a la oficina destino};
+
+% ---------------- carril del sistema ----------------
+\node[dec]            at (\B,-1.95) (d1) {¿metadatos\\completos?};
+\node[sys]            at (\B,-3.25) (s1) {Asignar folio en transacción\\con bloqueo de fila};
+\node[dec]            at (\B,-4.5)  (d2) {¿formato y\\tamaño válidos?};
+\node[sys]            at (\B,-5.8)  (s2) {Calcular SHA-256 y guardar\\fuera de la raíz pública};
+\node[sys]            at (\B,-7.1)  (s3) {Registrar el movimiento\\y cambiar el estado};
+
+% ---------------- carril de la oficina destino ----------------
+\node[act]            at (\Cc,-8.3)  (b1) {Revisar y registrar\\el acuse de recepción};
+\node[dec]            at (\Cc,-9.6)  (d3) {¿procede\\el trámite?};
+\node[small]          at (\Cl,-10.9) (b2) {Resguardar\\el expediente};
+\node[small]          at (\Cr,-10.9) (b3) {Cancelar asentando\\el motivo};
+\node[fin]            at (\Cc,-12.1) (fin) {};
+\fill[black!75] (\Cc,-12.1) circle (1.3mm);
+
+% ---------------- flujo principal ----------------
+\draw[fl] (ini) -- (a1);
+\draw[fl] (a1.east) -- (d1.west);
+\draw[fl] (d1.south) -- node[et]{sí} (s1.north);
+\draw[fl] (s1.west) -| node[et,pos=0.28]{folio asignado} (a2.north);
+\draw[fl] (a2.east) -- (d2.west);
+\draw[fl] (d2.south) -- node[et]{sí} (s2.north);
+\draw[fl] (s2.west) -| node[et,pos=0.28]{documento guardado} (a3.north);
+\draw[fl] (a3.east) -- (s3.west);
+\draw[fl] (s3.east) -| (b1.north);
+\draw[fl] (b1) -- (d3);
+\draw[fl] (d3.west) -| node[et,pos=0.3]{sí} (b2.north);
+\draw[fl] (d3.east) -| node[et,pos=0.3]{no} (b3.north);
+\draw[fl] (b2.south) |- (fin.west);
+\draw[fl] (b3.south) |- (fin.east);
+
+% ---------------- caminos de rechazo ----------------
+\draw[fl] (d1.south west) -- ++(-0.5,0) |- node[et,pos=0.72]{no} (a1.south east);
+\draw[fl] (d2.south west) -- ++(-0.5,0) |- node[et,pos=0.72]{no} (a2.south east);
+
+% ---------------- nota de bitacora ----------------
+\node[draw=black!45, dashed, rounded corners=2pt, fill=white, align=center,
+      text width=42mm, font=\tiny\itshape, inner sep=3.5pt] at (\B,-9.3) (nota)
+      {En cada transición de este carril, el servicio de bitácora asienta usuario,
+       fecha y hora, acción y folio. Ningún otro carril escribe en ella.};
+
+% ---------------- carriles ----------------
+\begin{scope}[on background layer]
+  \foreach \xa/\xb/\nom in {-0.3/4.5/{Capturista}, 4.5/10.3/{Sistema}, 10.3/17.0/{Responsable de la oficina destino}}{
+    \draw[draw=black!30, fill=black!2] (\xa,-0.3) rectangle (\xb,-12.9);
+    \node[font=\scriptsize\bfseries, text=black!65, anchor=north] at ({(\xa+\xb)/2},-0.42) {\nom};
+  }
+  \draw[draw=black!30] (-0.3,-0.95) -- (17.0,-0.95);
+\end{scope}
+
+\end{tikzpicture}
+\end{document}
